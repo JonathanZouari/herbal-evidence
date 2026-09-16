@@ -1,0 +1,35 @@
+# env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# node / playwright
+node_modules/
+test-results/
+playwright-report/
+
+# supabase local
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+
+# railway
+.railway/
+
+# os / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
