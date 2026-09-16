@@ -1,0 +1,92 @@
+{
+  "_disclaimer": "Discovery/screening inventory only. A screen_decision here is NOT a clinical determination and does not by itself authorize any patient-visible content -- every item still requires its own evidence and safety review before anything is published. Wikipedia is used exclusively as a taxonomy/discovery aid per its evidence_eligibility=ineligible_tertiary_or_encyclopedia in source_registry.json; no entry's efficacy, safety, mechanism, or cultural-origin claim may be cited to Wikipedia.",
+  "source_snapshot": {
+    "url": "https://en.wikipedia.org/wiki/List_of_forms_of_alternative_medicine",
+    "accessed_at": "2026-09-17",
+    "revision_note": "Collaboratively edited page; no fixed revision id captured in this pass. Re-snapshot before relying on this inventory again.",
+    "license": "Wikipedia article text is CC BY-SA 4.0; this file stores only a modality-name index and screening decisions, not reproduced article text."
+  },
+  "methodology": "Every modality named on the page falls into one of two buckets below: (1) a documented, auditable group-exclusion rule for non-ingestible categories (energy practices, manipulation/bodywork, divination/spiritual practices, devices, alternative diagnoses, exercise/movement) -- screened out as a group with named representative examples rather than one row per entry, because none of them involve an ingestible botanical, fungus, tea, food, diet, culinary practice, dietary supplement, or plant-derived product; or (2) an individual row in ingestible_candidates or brief_mandated_additions below for anything that DOES involve ingestion. This keeps coverage auditable (every section of the source page maps to a rule) without reproducing an unnecessary ~250-row transcription of the source page.",
+  "non_ingestible_group_exclusions": [
+    {
+      "group_label": "Energy practices",
+      "representative_entries": ["Reiki", "Therapeutic touch", "Qi (as an energy-manipulation practice)", "Magnet therapy", "Crystal healing", "Orgone", "Radionics", "Pranic healing"],
+      "reason": "No ingestible component; these are energy-manipulation or belief-based practices with no botanical, food, or supplement involved.",
+      "screen_decision": "out_of_scope_adjacent"
+    },
+    {
+      "group_label": "Manipulation and bodywork",
+      "representative_entries": ["Chiropractic", "Osteopathy", "Rolfing", "Craniosacral therapy", "Reflexology", "Tui na", "Shiatsu", "Massage therapy", "Cupping therapy", "Gua sha", "Moxibustion"],
+      "reason": "Physical/manual techniques, no ingestible component. Moxibustion and Tui na are procedurally associated with TCM but are explicitly out of scope for this ingestible-herb/nutrition proposal per instruction, even though they share a cultural system with the in-scope material.",
+      "screen_decision": "out_of_scope_adjacent"
+    },
+    {
+      "group_label": "Divination, spiritual, and faith-based practices",
+      "representative_entries": ["Faith healing", "Christian Science", "Astrology", "Tarot divination", "Feng shui", "Dowsing", "Shamanism", "Prayer", "Psychic surgery"],
+      "reason": "No ingestible component.",
+      "screen_decision": "out_of_scope_adjacent"
+    },
+    {
+      "group_label": "Devices, diagnostic systems, and pseudo-diagnoses",
+      "representative_entries": ["Iridology", "Biological terrain assessment", "Applied kinesiology", "Chinese pulse diagnosis (as a diagnostic act)", "Hair analysis", "Electromagnetic hypersensitivity", "Adrenal fatigue", "Leaky gut syndrome", "Chronic Lyme disease (as an alternative diagnosis construct)"],
+      "reason": "Diagnostic or device-based constructs, not ingestible interventions. Chinese pulse/tongue diagnosis is explicitly out of scope for this proposal's patient-facing content regardless (this module never provides pattern/syndrome diagnosis).",
+      "screen_decision": "out_of_scope_adjacent"
+    },
+    {
+      "group_label": "Exercise, movement, and mind-body practices",
+      "representative_entries": ["Tai chi", "Qigong (as a movement practice)", "Yoga (all styles)", "Pilates", "Meditation", "Breathwork", "Dance therapy"],
+      "reason": "Movement/mind-body practices, no ingestible component. Tai chi and qigong are culturally associated with Chinese medicine but are explicitly out of scope for this ingestible-herb/nutrition proposal per instruction.",
+      "screen_decision": "out_of_scope_adjacent"
+    },
+    {
+      "group_label": "Devices, injections, and procedures not covered by this ingestible-focused module",
+      "representative_entries": ["Ozone therapy", "Chelation therapy", "Blood irradiation therapies", "Colon hydrotherapy", "Ear candling"],
+      "reason": "Procedural/device interventions, no plant-derived ingestible product. Registered here rather than silently dropped because some (e.g. chelation, ozone) intersect cancer-quackery risk; a future safety-surveillance module outside this proposal's scope may need them.",
+      "screen_decision": "out_of_scope_adjacent"
+    }
+  ],
+  "ingestible_candidates": [
+    {"modality": "Chinese herbology / Chinese herbal medicine / Chinese medicine (herbal branch)", "cultural_system": "Traditional Chinese Medicine (TCM)", "screen_decision": "in_scope_this_module", "notes": "The core subject of this proposal; represented as cancer-context evidence cards, never as a recommendation list."},
+    {"modality": "Chinese food therapy", "cultural_system": "TCM", "screen_decision": "in_scope_this_module_nutrition_context_only", "notes": "Traditional dietary-therapy concepts are labeled as cultural/traditional context in diet_template_examples.json, never as biomedical rationale."},
+    {"modality": "Medicinal mushrooms generally (Ganoderma/reishi, Trametes versicolor/turkey-tail/PSK, others)", "cultural_system": "Overlaps TCM and other East Asian systems; also sold as generic supplements", "screen_decision": "in_scope_this_module_herb_adjacent", "notes": "Modeled with strict species/extract/product non-equivalence -- see card-ganoderma-mixed-cancers and card-psk-resected-gi-cancer in example_evidence_cards.json."},
+    {"modality": "Ayurveda", "cultural_system": "Ayurveda (India)", "screen_decision": "separate_module_link", "notes": "Links to the separate, currently unmerged proposal/ayurveda-oncology-support branch. Not conflated with TCM."},
+    {"modality": "Homeopathy / Bach flower remedies", "cultural_system": "Homeopathy (Central European origin)", "screen_decision": "separate_module_link", "notes": "Links to the separate, currently unmerged proposal/homeopathy-oncology-evidence branch. Bach flower remedies are a homeopathy-adjacent system, not TCM, and are not addressed by this module."},
+    {"modality": "Traditional Japanese medicine / Kampo", "cultural_system": "Japan", "screen_decision": "out_of_scope_adjacent", "notes": "Distinct medical system with its own formula tradition (often derived from classical Chinese texts but independently standardized under Japanese regulation). Not relabeled as TCM; no module exists for it in this repository yet."},
+    {"modality": "Traditional Korean medicine", "cultural_system": "Korea", "screen_decision": "out_of_scope_adjacent", "notes": "Distinct system; Korean/Panax ginseng research is noted under the ginseng species-distinction cards but the broader Korean medical system is not addressed here."},
+    {"modality": "Traditional Tibetan medicine / Sowa Rigpa", "cultural_system": "Tibet", "screen_decision": "out_of_scope_adjacent"},
+    {"modality": "Mongolian traditional medicine", "cultural_system": "Mongolia", "screen_decision": "out_of_scope_adjacent"},
+    {"modality": "Unani medicine", "cultural_system": "Greco-Arabic/South Asian", "screen_decision": "out_of_scope_adjacent"},
+    {"modality": "Siddha medicine", "cultural_system": "Tamil/South Indian", "screen_decision": "out_of_scope_adjacent"},
+    {"modality": "African traditional medicine (Muti and related)", "cultural_system": "Various African traditions", "screen_decision": "out_of_scope_adjacent"},
+    {"modality": "Bush medicine", "cultural_system": "Various", "screen_decision": "out_of_scope_adjacent"},
+    {"modality": "Curandero practice", "cultural_system": "Latin American", "screen_decision": "out_of_scope_adjacent"},
+    {"modality": "Jamu", "cultural_system": "Indonesia", "screen_decision": "out_of_scope_adjacent"},
+    {"modality": "Vietnamese traditional medicine", "cultural_system": "Vietnam", "screen_decision": "out_of_scope_adjacent", "notes": "Shares some historical formula lineage with TCM but is its own system; not relabeled as TCM."},
+    {"modality": "Naturopathy", "cultural_system": "Eclectic/Western", "screen_decision": "out_of_scope_adjacent", "notes": "An eclectic system that may prescribe herbs from many traditions plus supplements, diet, and other modalities; not itself TCM and not addressed as a system by this module."},
+    {"modality": "Herbalism / Herbal medicine (Western)", "cultural_system": "Western herbalism", "screen_decision": "out_of_scope_adjacent", "notes": "Distinct herbal tradition from TCM; a Western-herbalism oncology module, if ever built, would be its own separately named proposal."},
+    {"modality": "Macrobiotic lifestyle", "cultural_system": "Originated from a Japanese Zen-influenced dietary philosophy, later Westernized", "screen_decision": "avoid_as_cancer_treatment_diet", "notes": "No qualifying human oncology evidence that a macrobiotic diet treats cancer; strict versions risk nutritional inadequacy during active treatment."},
+    {"modality": "Alkaline diet", "cultural_system": "Not a traditional system; modern pseudoscientific framework", "screen_decision": "blocked_unsupported", "notes": "The premise that diet meaningfully alters tumor/blood pH to treat cancer is not supported by current evidence."},
+    {"modality": "Detoxification / Foot detox / Charcoal cleanse", "cultural_system": "Modern wellness marketing", "screen_decision": "avoid", "notes": "No qualifying evidence of cancer benefit; potential to displace nutrition/hydration needed during treatment."},
+    {"modality": "Coffee enema", "cultural_system": "Associated with Gerson-style protocols", "screen_decision": "avoid", "notes": "Documented harm reports (electrolyte disturbance, infection, bowel injury) and no oncology benefit evidence; explicitly excluded per instruction."},
+    {"modality": "Colloidal silver therapy", "cultural_system": "Modern wellness marketing", "screen_decision": "avoid", "notes": "No oncology benefit evidence; argyria and drug-interaction risk."},
+    {"modality": "Jilly Juice", "cultural_system": "Modern internet-originated regimen", "screen_decision": "avoid", "notes": "Associated with reported serious harm (severe electrolyte disturbance); no oncology evidence."},
+    {"modality": "MMS (Miracle Mineral Solution)", "cultural_system": "Modern wellness marketing", "screen_decision": "avoid", "notes": "Industrial bleach precursor (chlorine dioxide); documented severe harm; regulatory warnings in multiple jurisdictions; never a food or supplement equivalent."},
+    {"modality": "Camel urine", "cultural_system": "Traditional practice in some regions, unrelated to TCM", "screen_decision": "avoid", "notes": "No oncology evidence; documented infectious-disease risk (e.g. MERS-CoV association) independent of any cancer question."},
+    {"modality": "Black salve", "cultural_system": "Modern/folk topical escharotic", "screen_decision": "avoid", "notes": "Caustic topical product marketed for skin cancer; documented tissue destruction and disfigurement; not ingestible but flagged given severity and frequent co-marketing alongside ingestible 'natural cancer cure' products."},
+    {"modality": "Kambo", "cultural_system": "South American (frog secretion ritual)", "screen_decision": "avoid", "notes": "Documented cardiac, renal, and fatal adverse events; no oncology evidence."},
+    {"modality": "Orthomolecular medicine / Megavitamin therapy", "cultural_system": "Modern, not traditional", "screen_decision": "caution_pharmacist_review", "notes": "High-dose antioxidant/vitamin supplementation requires oncology-pharmacy review given potential interference with radiotherapy/chemotherapy oxidative mechanisms; never an automatic supplement stack."},
+    {"modality": "Fasting (general Wikipedia entry)", "cultural_system": "Cross-cultural", "screen_decision": "separate_specialist_pathway", "notes": "A medically indicated fasting or fasting-mimicking protocol requires its own specialist pathway; cannot become generic cancer nutrition content in this module."},
+    {"modality": "Dietary supplements (generic Wikipedia entry)", "cultural_system": "Not a traditional system", "screen_decision": "routed_to_herb_supplement_interaction_workflow", "notes": "Any concentrated supplement form of an otherwise-food ingredient (e.g. curcumin extract, EGCG concentrate) is routed through the same interaction/safety review as a TCM herb extract, never treated as an ordinary food."}
+  ],
+  "brief_mandated_additions_not_individually_named_on_the_wikipedia_page": [
+    {"category": "Essiac / Flor Essence", "cultural_system": "Marketed herbal mixture with a distinct North American origin story; NOT TCM", "screen_decision": "adjacent_formula_blocked_as_cancer_treatment", "notes": "Preserved as its own distinct cultural/marketing history per source-assessment.md; NCI and Cancer Research UK report no clear anticancer evidence, and Flor Essence has an animal-model signal for possibly INCREASED tumor formation. Never relabeled as Chinese medicine."},
+    {"category": "Mistletoe (as injection vs. tea vs. food)", "cultural_system": "European/anthroposophic medicine (e.g. Iscador); not TCM", "screen_decision": "separate_regulated_pathway", "notes": "Injectable mistletoe extract is a distinct, jurisdiction-regulated pharmaceutical product in some countries and is never equivalent to mistletoe tea or treated as an ordinary food; out of scope for this TCM-focused module."},
+    {"category": "Cannabis / cannabinoids", "cultural_system": "Not TCM; a regulated pharmacologic topic in most jurisdictions", "screen_decision": "separate_regulated_pathway", "notes": "Jurisdiction-specific symptom evidence (e.g. nausea, appetite) exists but cannabis is a regulated drug topic, not an ordinary herb or food, and is explicitly out of scope for this ingestible-herb/nutrition proposal."},
+    {"category": "Laetrile/amygdalin and apricot kernels", "cultural_system": "Not TCM", "screen_decision": "avoid", "notes": "Cyanide-toxicity risk is well documented; NCI reports no efficacy and real harm potential. This is a toxicity/avoid safety record, never a food recommendation, despite apricot kernels' food-adjacent appearance."},
+    {"category": "Gerson-style diet/protocol", "cultural_system": "Not TCM", "screen_decision": "avoid", "notes": "Involves coffee enemas, extreme dietary restriction, and large-volume raw juicing; documented harm potential and no oncology benefit evidence; explicitly excluded per instruction alongside coffee enemas and raw-food/juice regimens."},
+    {"category": "Ketogenic diet (therapeutic, cancer-specific)", "cultural_system": "Not TCM", "screen_decision": "separate_specialist_pathway", "notes": "A medically indicated therapeutic ketogenic diet requires its own specialist nutrition/metabolic pathway; cannot become generic cancer nutrition content in this module."},
+    {"category": "Fasting-mimicking diets", "cultural_system": "Not TCM", "screen_decision": "separate_specialist_pathway"},
+    {"category": "Raw-food / juice-only regimens", "cultural_system": "Overlaps several wellness movements; not TCM", "screen_decision": "avoid_as_sole_dietary_pattern", "notes": "Food-safety and malnutrition risk, especially during neutropenia; any juice mention in this module's nutrition templates must be individualized by an oncology dietitian, never presented as anticancer."},
+    {"category": "High-dose antioxidant supplementation (general)", "cultural_system": "Not TCM", "screen_decision": "caution_pharmacist_review", "notes": "Same handling as Orthomolecular medicine/Megavitamin therapy above; potential interference with radiotherapy/chemotherapy mechanisms."}
+  ]
+}
