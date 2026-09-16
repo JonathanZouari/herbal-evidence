@@ -31,3 +31,7 @@ Details and setup steps: see `docs/deployment.md`. Development status per phase 
 ## Status
 
 Phase 0 (foundation) — in progress. See `docs/decisions.md` for engineering choices.
+
+## Proposals
+
+- [Ayurveda oncology supportive-care and Indian nutrition module](docs/proposals/ayurveda-oncology-support/README.md) — additive module proposal, not yet approved.
