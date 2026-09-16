@@ -31,3 +31,7 @@ Details and setup steps: see `docs/deployment.md`. Development status per phase 
 ## Status
 
 Phase 0 (foundation) — in progress. See `docs/decisions.md` for engineering choices.
+
+## Proposals
+
+- [Chinese herbal oncology evidence and nutrition module](docs/proposals/chinese-herbal-oncology-support/README.md) — additive evidence-education and nutrition module proposal, not yet approved.
