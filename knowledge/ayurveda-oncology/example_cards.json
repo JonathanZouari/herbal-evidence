@@ -1,0 +1,168 @@
+{
+  "_disclaimer": "Synthetic/illustrative FIXTURE data for the ayurveda-oncology-support proposal's schema and validator. Evidence summaries are drawn from the study descriptions supplied for this proposal and have NOT been re-verified against full-text primary sources in this pass (see verification_status on each cited source in source_registry.json). Do not treat any card here as clinically approved or patient-visible. No card may ever gain a recommended_dose field or an autonomous 'recommended' state -- both are rejected by scripts/validate_ayurveda_proposal.py.",
+  "allowed_states": ["avoid", "blocked_unsupported", "insufficient_evidence", "research_only", "clinician_discussion_only", "general_education"],
+  "cards": [
+    {
+      "id": "card-boswellia-rt-cerebral-edema",
+      "cancer_context": "Primary or secondary malignant brain tumors during radiotherapy",
+      "disease_state": "active disease, undergoing cranial radiotherapy",
+      "treatment_context": "Radiotherapy",
+      "population": "Adults with primary or secondary brain tumors receiving RT",
+      "herb": { "species": "Boswellia serrata", "preparation": "standardized gum-resin extract (not culinary, not tea)" },
+      "supportive_care_purpose": "Possible reduction of radiotherapy-associated cerebral edema -- a supportive-care endpoint, not a tumor-directed or steroid-replacement claim",
+      "evidence": {
+        "summary": "One small randomized, double-blind pilot trial reported reduced RT-associated cerebral edema versus placebo.",
+        "source_ids": ["src-pmid-21287538"],
+        "certainty": "low",
+        "sample_size_class": "small_single_trial"
+      },
+      "limitations": "Single small pilot; not independently replicated; supportive imaging/edema endpoint only, not survival or tumor response.",
+      "safety": {
+        "never_imply": ["brain tumor treatment", "replacement for corticosteroids", "cure or tumor control"],
+        "known_concerns": ["extract vs. culinary-grade equivalence unverified", "potential interaction with anti-edema/steroid regimens not to be assumed absent clinician review"],
+        "red_flags_requiring_escalation": ["worsening neurological symptoms", "new seizure activity", "self-directed steroid tapering"]
+      },
+      "state": "clinician_discussion_only",
+      "review_status": "pending_oncology_and_ayurveda_approval"
+    },
+    {
+      "id": "card-ashwagandha-breast-chemo-fatigue",
+      "cancer_context": "Breast cancer during chemotherapy",
+      "disease_state": "active disease, undergoing chemotherapy",
+      "treatment_context": "Chemotherapy (regimen not specified in source)",
+      "population": "Adults with breast cancer receiving chemotherapy",
+      "herb": { "species": "Withania somnifera", "preparation": "root extract" },
+      "supportive_care_purpose": "Possible improvement in cancer-related fatigue and quality of life during chemotherapy",
+      "evidence": {
+        "summary": "Open-label, nonrandomized comparative study; no proven tumor-control or survival benefit.",
+        "source_ids": ["src-pmid-23142798"],
+        "certainty": "very_low",
+        "sample_size_class": "small_nonrandomized"
+      },
+      "limitations": "No randomization or blinding; high risk of bias; fatigue is subjective and susceptible to placebo/expectation effects.",
+      "safety": {
+        "never_imply": ["tumor treatment", "chemotherapy replacement or dose reduction rationale"],
+        "known_concerns": ["Withania is contraindicated or requires caution in some thyroid, sedative, and immunosuppressant contexts -- not assessed here", "root-extract dose/standardization varies by product"],
+        "red_flags_requiring_escalation": ["unexplained sedation", "thyroid symptom changes", "planned surgery within 2 weeks"]
+      },
+      "state": "research_only",
+      "review_status": "pending_oncology_and_ayurveda_approval"
+    },
+    {
+      "id": "card-ginger-cinv-general",
+      "cancer_context": "Mixed cancer types during chemotherapy",
+      "disease_state": "active disease, undergoing chemotherapy",
+      "treatment_context": "Chemotherapy with standard antiemetic background varying by trial",
+      "population": "Adults receiving emetogenic chemotherapy",
+      "herb": { "species": "Zingiber officinale", "preparation": "ginger / standardized 6-gingerol preparations (not equivalent to raw culinary ginger)" },
+      "supportive_care_purpose": "Adjunct to -- never a substitute for -- prescribed antiemetics for chemotherapy-induced nausea and vomiting",
+      "evidence": {
+        "summary": "Mixed: at least one trial reports benefit for CINV; a separate trial in an AC breast-chemotherapy regimen with ondansetron/dexamethasone found no benefit (see card-ginger-ac-null for that specific context, kept separate rather than averaged away).",
+        "source_ids": ["src-pmid-21818642", "src-pmid-28349496"],
+        "certainty": "low_mixed",
+        "sample_size_class": "multiple_small_trials"
+      },
+      "limitations": "Preparation, dose standardization, chemotherapy regimen, and background antiemetic regimen all differ between trials and are not interchangeable.",
+      "safety": {
+        "never_imply": ["substitute for prescribed antiemetics", "side-effect-free"],
+        "known_concerns": ["possible antiplatelet/bleeding-risk interaction", "gallstone and reflux considerations", "glucose-lowering interaction potential", "perioperative bleeding risk near surgery"],
+        "red_flags_requiring_escalation": ["persistent vomiting unable to keep fluids down", "signs of bleeding or bruising", "upcoming surgery"]
+      },
+      "state": "clinician_discussion_only",
+      "review_status": "pending_oncology_and_ayurveda_approval"
+    },
+    {
+      "id": "card-ginger-ac-null",
+      "cancer_context": "Breast cancer, AC (doxorubicin/cyclophosphamide) chemotherapy",
+      "disease_state": "active disease, undergoing AC chemotherapy",
+      "treatment_context": "AC chemotherapy with ondansetron and dexamethasone antiemetic background",
+      "population": "Adults with breast cancer on AC with standard antiemetic prophylaxis",
+      "herb": { "species": "Zingiber officinale", "preparation": "ginger capsule" },
+      "supportive_care_purpose": "Investigated as adjunct for nausea/vomiting; this specific trial found no added benefit",
+      "evidence": {
+        "summary": "Randomized trial found no significant benefit of ginger capsules over placebo when added to ondansetron/dexamethasone in this regimen.",
+        "source_ids": ["src-pmid-27714530"],
+        "certainty": "low",
+        "sample_size_class": "single_trial_null"
+      },
+      "limitations": "Null result specific to this regimen and antiemetic background; must not be silently merged into the general ginger/CINV card's evidence average.",
+      "safety": {
+        "never_imply": ["ginger is proven ineffective for CINV in all regimens (overgeneralization)", "substitute for prescribed antiemetics"],
+        "known_concerns": ["same interaction profile as card-ginger-cinv-general"],
+        "red_flags_requiring_escalation": ["persistent vomiting unable to keep fluids down"]
+      },
+      "state": "insufficient_evidence",
+      "review_status": "pending_oncology_and_ayurveda_approval"
+    },
+    {
+      "id": "card-whole-systems-ayurveda-breast-survivorship",
+      "cancer_context": "Breast-cancer survivors without active disease",
+      "disease_state": "post-treatment, no active disease",
+      "treatment_context": "None active; survivorship phase",
+      "population": "Adult breast-cancer survivors",
+      "herb": { "species": null, "preparation": "Multi-component whole-systems Ayurveda nutrition/lifestyle program (not a single herb)" },
+      "supportive_care_purpose": "Feasibility and acceptability of a structured lifestyle program; effect on self-reported symptoms and quality of life",
+      "evidence": {
+        "summary": "Single-arm feasibility study; no recurrence-prevention or disease-efficacy claim is supported.",
+        "source_ids": ["src-pmid-33312762"],
+        "certainty": "very_low",
+        "sample_size_class": "single_arm_pilot"
+      },
+      "limitations": "No control group; feasibility/acceptability endpoints only; cannot support any claim about cancer recurrence, progression, or survival.",
+      "safety": {
+        "never_imply": ["recurrence prevention", "cancer treatment or cure", "efficacy beyond feasibility/acceptability"],
+        "known_concerns": ["program components (diet, herbs, routine) were not individually isolated for safety analysis"],
+        "red_flags_requiring_escalation": ["any component conflicting with current oncology follow-up care"]
+      },
+      "state": "general_education",
+      "general_education_scope": "feasibility and patient experience only, not efficacy",
+      "review_status": "pending_oncology_and_ayurveda_approval"
+    },
+    {
+      "id": "card-turmeric-curcumin-multi-cancer",
+      "cancer_context": "Multiple cancer types",
+      "disease_state": "any",
+      "treatment_context": "Proposed as adjunct across various treatment contexts in the source literature",
+      "population": "Adults with cancer, various types",
+      "herb": { "species": "Curcuma longa", "preparation": "turmeric / curcumin-containing products (culinary spice, extract, and isolated curcumin are NOT equivalent and must not be conflated)" },
+      "supportive_care_purpose": "Proposed anti-inflammatory/adjunct role; no cancer-treatment claim is supported",
+      "evidence": {
+        "summary": "Per current NCI PDQ conclusion, evidence is insufficient to support curcumin as a cancer treatment; bioavailability and formulation vary widely between products.",
+        "source_ids": ["src-nci-curcumin-pdq"],
+        "certainty": "insufficient",
+        "sample_size_class": "mixed_literature_no_consistent_signal"
+      },
+      "limitations": "Formulation heterogeneity (culinary vs. extract vs. isolated curcumin vs. bioavailability-enhanced products) makes pooling across studies unreliable.",
+      "safety": {
+        "never_imply": ["cancer treatment", "cancer prevention", "cure"],
+        "known_concerns": ["possible interaction with anticoagulants and some chemotherapy agents", "high-dose extract not equivalent to dietary turmeric"],
+        "red_flags_requiring_escalation": ["planned surgery", "on anticoagulant/antiplatelet therapy"]
+      },
+      "state": "insufficient_evidence",
+      "review_status": "pending_oncology_and_ayurveda_approval"
+    },
+    {
+      "id": "card-commercial-multiherb-packs-blocked",
+      "cancer_context": "Leukemia, multiple myeloma, male breast cancer, Bartholin gland cancer",
+      "disease_state": "any, as marketed",
+      "treatment_context": "Marketed as standalone or adjunct 'natural treatment'",
+      "population": "As marketed to the general public",
+      "herb": { "species": null, "preparation": "Proprietary commercial multi-herb packs" },
+      "supportive_care_purpose": "None established -- registered here only to record that it was reviewed and blocked, not to imply a purpose",
+      "evidence": {
+        "summary": "Sourced entirely from commercial marketing pages selling herb packs; no independent human clinical evidence was supplied or located.",
+        "source_ids": ["src-planetayurveda-leukemia", "src-planetayurveda-mm", "src-planetayurveda-breast-men", "src-planetayurveda-bartholin"],
+        "certainty": "none",
+        "sample_size_class": "no_qualifying_evidence_identified"
+      },
+      "limitations": "Commercial pages do not by themselves establish efficacy or safety regardless of testimonial content or clinic affiliation.",
+      "safety": {
+        "never_imply": ["treatment", "cure", "recommendation of any kind"],
+        "known_concerns": ["proprietary multi-herb blends make ingredient-level safety and interaction review impossible without full disclosure"],
+        "red_flags_requiring_escalation": ["patient already purchased or is taking one of these packs -- refer to treating oncology team"]
+      },
+      "state": "blocked_unsupported",
+      "review_status": "no_further_review_planned_unless_new_evidence_supplied"
+    }
+  ]
+}

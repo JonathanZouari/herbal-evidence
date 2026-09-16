@@ -1,0 +1,88 @@
+{
+  "_disclaimer": "Illustrative FIXTURE templates for the ayurveda-oncology-support proposal. None of these are patient-visible until an oncology-dietitian approval (plus the same version's clinician/Ayurveda approvals for any herb note) is recorded. No template includes a calorie/protein calculator, a personalized meal plan, or a supplement dose.",
+  "version": "0.1.0-proposal",
+  "review_status": "draft_pending_oncology_dietitian_approval",
+  "review_expiry": "review required within 12 months of approval date; no approval date set yet",
+  "templates": [
+    {
+      "id": "template-poor-appetite-weight-loss",
+      "goal": "Support adequate energy and protein intake despite reduced appetite; slow or stop unintentional weight loss.",
+      "may_apply_when": ["reduced appetite during or after cancer treatment", "early satiety", "unintentional weight loss not yet formally assessed"],
+      "unsuitable_when": ["signs of bowel obstruction", "dysphagia/aspiration risk (use mucositis/dysphagia template and refer for swallow assessment instead)", "rapid unintentional weight loss already under dietitian/medical workup -- defer to that plan"],
+      "flexible_food_pattern": "Small frequent energy- and protein-dense meals/snacks rather than three large meals; fortify usual foods (e.g. added ghee/oil, nut pastes, dairy or dairy-alternative, legumes) rather than restricting food groups; fluids between rather than with meals to avoid early fullness.",
+      "indian_food_examples": ["Khichdi enriched with ghee and paneer or moong dal", "Full-fat milk or paneer-based smoothies with banana", "Idli/dosa with extra ghee or coconut chutney", "Roasted nut and seed powder stirred into porridge or curd", "Coconut and jaggery-based small energy balls (laddoo) if tolerated and not contraindicated for glucose control"],
+      "ayurvedic_tradition_context": "Some Ayurvedic sources describe agni (digestive fire) as diminished during illness and favor warm, well-cooked, easily digestible food with ghee to support appetite. This is a traditional framing, presented separately, and is not itself evidence of a biomedical appetite-stimulant effect.",
+      "biomedical_rationale": "Energy- and protein-dense small meals reduce the volume needed per sitting while meeting intake targets; this is standard oncology-nutrition guidance, not specific to any herb.",
+      "herb_supplement_note": "No herb or supplement is recommended in this template. If a clinician and Ayurveda-clinician jointly approve a specific supportive herb card in the future for appetite, it will be linked here as a separate, independently reviewed item -- never bundled into the food pattern itself.",
+      "red_flags_requiring_escalation": ["weight loss greater than roughly 5% of body weight in a month", "inability to keep food or fluids down", "signs of dehydration"],
+      "sources": ["src-espen-guideline", "src-acs-food-safety"]
+    },
+    {
+      "id": "template-nausea-during-treatment",
+      "goal": "Maintain fluid and food intake while nausea is managed by prescribed antiemetics.",
+      "may_apply_when": ["treatment-related nausea with antiemetics already prescribed or being arranged"],
+      "unsuitable_when": ["vomiting preventing any fluid retention (needs urgent clinical contact, not a diet template)", "suspected bowel obstruction"],
+      "flexible_food_pattern": "Bland, room-temperature or cool foods with mild aroma; small sips of fluid throughout the day; avoid very fatty, very sweet, or strongly spiced foods if they worsen symptoms; eat before feeling very hungry to avoid an empty-stomach nausea trigger.",
+      "indian_food_examples": ["Plain khichdi or curd rice", "Dry toast or plain poha", "Buttermilk (chaas) with a pinch of roasted cumin", "Coconut water in small sips", "Plain, thin dal without heavy tempering if aroma is a trigger"],
+      "ayurvedic_tradition_context": "Ginger and small amounts of dry-roasted cumin/fennel are traditionally used in Indian households for digestive comfort. This is a culinary/traditional note, not a claim that these foods treat chemotherapy-induced nausea.",
+      "biomedical_rationale": "Small, frequent, bland intake reduces gastric distension and aroma triggers; consistent with standard oncology supportive-care nutrition advice.",
+      "herb_supplement_note": "Ginger is addressed separately in knowledge/ayurveda-oncology/example_cards.json (card-ginger-cinv-general and card-ginger-ac-null) as a clinician_discussion_only / insufficient_evidence item, never as a substitute for prescribed antiemetics. This food template does not itself recommend a ginger dose or preparation.",
+      "red_flags_requiring_escalation": ["no fluids retained for 24 hours", "signs of dehydration", "blood in vomit"],
+      "sources": ["src-nci-dietary-interactions-pdq", "src-espen-guideline"]
+    },
+    {
+      "id": "template-mucositis-dry-mouth-dysphagia",
+      "goal": "Maintain intake safely when the mouth or throat is sore, dry, or swallowing is painful/effortful.",
+      "may_apply_when": ["diagnosed oral mucositis", "treatment-related dry mouth (xerostomia)", "mild painful swallowing already assessed as not an aspiration risk"],
+      "unsuitable_when": ["any suspected aspiration risk or diagnosed dysphagia requiring a speech-and-swallow therapist's texture plan -- defer entirely to that clinical plan", "acute severe mucositis unable to swallow saliva"],
+      "flexible_food_pattern": "Soft, moist, lukewarm-to-cool foods; avoid acidic, very salty, very spicy, coarse, or crusty textures; moisten dry foods with sauces, dals, or yogurt; small bites.",
+      "indian_food_examples": ["Well-cooked, mashed khichdi with extra ghee", "Curd (dahi) or lassi if not contraindicated", "Mashed banana or ripe papaya", "Soft idli soaked slightly in sambar or coconut chutney", "Pureed dal soup"],
+      "ayurvedic_tradition_context": "Cooling, moist, ghee-based preparations are traditionally favored for irritated tissue in some Ayurvedic dietary frameworks. Presented as tradition, not as treatment for mucositis.",
+      "biomedical_rationale": "Soft, moist, non-irritant textures reduce mechanical and chemical irritation of inflamed oral/esophageal mucosa; standard supportive-care nutrition principle.",
+      "herb_supplement_note": "No herb or supplement is recommended for mucositis in this template.",
+      "red_flags_requiring_escalation": ["inability to swallow saliva", "coughing or choking with food/fluids (possible aspiration)", "signs of dehydration", "fever with mucositis (possible infection)"],
+      "sources": ["src-espen-guideline", "src-acs-food-safety"]
+    },
+    {
+      "id": "template-diarrhea-during-treatment",
+      "goal": "Reduce stool frequency/fluidity while maintaining hydration and electrolyte intake.",
+      "may_apply_when": ["treatment-related diarrhea without fever or blood in stool"],
+      "unsuitable_when": ["fever, blood in stool, or signs of infection (contact clinical team, do not manage with diet alone)", "suspected neutropenic sepsis"],
+      "flexible_food_pattern": "Low-insoluble-fiber, low-fat, low-lactose pattern temporarily; frequent small sips of oral-rehydration-appropriate fluids; reintroduce fiber gradually as symptoms settle.",
+      "indian_food_examples": ["Plain rice or rice-based khichdi without heavy legumes", "Curd (dahi) if lactose is tolerated -- omit if not", "Ripe banana", "Buttermilk with a pinch of salt and roasted cumin as a fluid/electrolyte source", "Boiled and mashed potato"],
+      "ayurvedic_tradition_context": "Buttermilk with roasted cumin is a traditional household remedy for loose motions in many Indian communities. Traditional use noted separately; not presented as a validated antidiarrheal treatment.",
+      "biomedical_rationale": "Temporary reduction of insoluble fiber and fat, plus oral fluid/electrolyte replacement, is standard supportive management for treatment-related diarrhea pending medical review if it persists.",
+      "herb_supplement_note": "No herb or supplement is recommended in this template.",
+      "red_flags_requiring_escalation": ["fever", "blood in stool", "signs of dehydration", "diarrhea persisting beyond 24-48 hours", "known or suspected neutropenia with fever (medical emergency)"],
+      "sources": ["src-espen-guideline", "src-nci-dietary-interactions-pdq"]
+    },
+    {
+      "id": "template-constipation-with-obstruction-redflags",
+      "goal": "Support comfortable, regular bowel movements while explicitly screening out obstruction before any fiber/fluid advice is applied.",
+      "may_apply_when": ["mild treatment- or opioid-related constipation with no obstruction red flags present"],
+      "unsuitable_when": ["any obstruction red flag below is present -- this template must not be shown or followed if so", "known bowel surgery/stoma without surgical team clearance for dietary fiber changes"],
+      "obstruction_red_flags_screen_first": ["no bowel movement or gas passage for several days with worsening pain", "abdominal distension with vomiting", "severe colicky abdominal pain"],
+      "flexible_food_pattern": "Gradual increase in fluids and soluble fiber if no red flags are present; regular meal timing; light activity as tolerated.",
+      "indian_food_examples": ["Well-hydrated whole fruits such as papaya or pear", "Soaked and cooked whole moong or chana in moderation", "Warm water first thing in the morning", "Vegetable-forward dal with skins retained where tolerated"],
+      "ayurvedic_tradition_context": "Warm water and well-cooked legumes are traditionally favored for regularity in some frameworks. This is a general, non-forced dietary note -- it explicitly excludes any laxative-herb, purgative (virechana-style), or cleansing regimen, which are out of scope for this module.",
+      "biomedical_rationale": "Gradual fiber and fluid increase is standard first-line dietary management for uncomplicated constipation once obstruction has been excluded.",
+      "herb_supplement_note": "No herbal laxative, purgative formulation, or supplement is included or implied. This module explicitly excludes virechana, forced-purgation, and similar self-directed cleansing practices for people with cancer.",
+      "red_flags_requiring_escalation": ["any obstruction red flag listed above", "no improvement after a few days of the flexible pattern"],
+      "sources": ["src-espen-guideline"]
+    },
+    {
+      "id": "template-food-safety-neutropenia",
+      "goal": "Reduce foodborne-illness risk during neutropenia or substantial immunosuppression.",
+      "may_apply_when": ["clinician-confirmed neutropenia or significant immunosuppression"],
+      "unsuitable_when": ["not currently neutropenic/immunosuppressed -- do not apply unnecessarily restrictive food-safety rules outside this window"],
+      "flexible_food_pattern": "Well-cooked foods only; avoid unpasteurized dairy and juice, raw or undercooked meat/egg/fish, raw sprouts, unwashed raw produce, and buffet/leftover food held at room temperature; wash hands and produce thoroughly; use safe water.",
+      "indian_food_examples": ["Well-cooked dal and vegetables instead of raw salads", "Pasteurized milk/curd instead of unpasteurized", "Freshly boiled and cooled water or well-boiled soups instead of raw fruit/vegetable juices", "Fully cooked khichdi instead of raw sprouted-lentil (moong/chana) salads"],
+      "ayurvedic_tradition_context": "Not applicable as a distinct tradition item here -- this template is safety-driven; any traditional raw-food, raw-sprout, or raw-juice practice is explicitly set aside during neutropenia regardless of tradition.",
+      "biomedical_rationale": "Neutropenic patients have materially higher risk of severe infection from foodborne pathogens; raw sprouts, unpasteurized juices/dairy, and undercooked animal products are established higher-risk items in oncology food-safety guidance.",
+      "herb_supplement_note": "No herb, supplement, or raw herbal juice/concoction is recommended during neutropenia in this template.",
+      "red_flags_requiring_escalation": ["fever during known or suspected neutropenia (treat as a medical emergency, not a diet question)", "any GI illness symptom during neutropenia"],
+      "sources": ["src-acs-food-safety", "src-espen-guideline"],
+      "audit_note_from_local_diet_chart": "The local 'LIFE SUPPORT DIET' handout recommends raw soaked nuts, raw sprouted legumes, and multiple raw vegetable/fruit juices multiple times daily with no neutropenia screening. That pattern is flagged as unsafe during neutropenia and is NOT reproduced here; see source-assessment.md."
+    }
+  ]
+}
