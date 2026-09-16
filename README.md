@@ -31,3 +31,7 @@ Details and setup steps: see `docs/deployment.md`. Development status per phase 
 ## Status
 
 Phase 0 (foundation) — in progress. See `docs/decisions.md` for engineering choices.
+
+## Proposals
+
+- [Homeopathy oncology evidence and safety module](docs/proposals/homeopathy-oncology-evidence/README.md) — additive evidence-education module proposal, not yet approved.

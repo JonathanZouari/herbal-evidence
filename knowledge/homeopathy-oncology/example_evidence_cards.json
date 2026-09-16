@@ -1,0 +1,518 @@
+{
+  "_disclaimer": "Synthetic/illustrative FIXTURE data for the homeopathy-oncology-evidence proposal's schema and validator. No card here is patient-visible, approved, or a recommendation. Every card's 'state' is one of the allowed evidence states -- there is no 'recommended', 'effective', 'proven', or 'supported' state anywhere in this system, and the validator rejects any that appears.",
+  "allowed_states": ["avoid", "blocked_unsupported", "blocked_integrity", "blocked_no_results", "insufficient_evidence", "research_only", "clinician_discussion_only", "general_education"],
+  "clinician_discussion_only_meaning": "Disclose an already-used product and its exact label to the oncology team. This state never means a clinician is being prompted to recommend the product.",
+  "standard_safety_language": {
+    "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+    "standard_care_statement": "Continue all prescribed oncology treatment as directed. Disclose the exact label (brand, ingredients, potency notation) of any homeopathic product in use to the treating oncology team."
+  },
+  "cards": [
+    {
+      "id": "card-homeopathy-general-any-cancer",
+      "cancer_context": "Any cancer type",
+      "disease_state": "any",
+      "treatment_context": "any (proposed as standalone or adjunct across contexts in the broader literature)",
+      "population": "General cancer patient population, as claimed across commercial and narrative sources",
+      "claim_or_purpose_studied": "Cancer prevention, tumor response, disease progression, recurrence, or overall survival attributed to homeopathy generally",
+      "intervention": {
+        "formulation_category": "not_applicable_no_qualifying_evidence",
+        "ingredients_known": null,
+        "potency_as_study_metadata": "varies across the pooled claims; not a single studied preparation",
+        "route": "not_applicable",
+        "carrier_excipients": "not_reported",
+        "co_interventions": [],
+        "formulation_generalization_note": "This card exists precisely because no single exact formulation has qualifying human evidence for a general cancer-outcome claim; see the specific cards below for the individual preparations that were actually studied, none of which generalize to 'homeopathy' as a whole."
+      },
+      "comparator": "not applicable -- no qualifying controlled human evidence identified for a general claim",
+      "sample_size": "not applicable",
+      "outcomes_prespecified": ["tumor response", "progression", "recurrence", "survival"],
+      "outcome_type": "not_applicable",
+      "result_direction": "unavailable",
+      "evidence": {
+        "summary": "Reliable current evidence (NCCIH, Cancer Research UK, Macmillan, the Milazzo 2006 and Wagenknecht 2022 systematic reviews) does not establish homeopathy as a cancer prevention, cancer treatment, tumor-control, tumor-shrinking, or curative modality. The Prasanta Banerji Homeopathic Research Foundation's widely cited case-series claim (approx. 17,324-19,317 patients, 1990-2005, reported 19% complete/21% partial regression or stabilization; cited in the local APHA handout via Frenkel 2015) is an uncontrolled case series with no independent replication, and the exact treatments used were not disclosed even in the US National Cancer Institute's own 'Best Case Series' review of related material.",
+        "source_ids": ["src-nccih-homeopathy", "src-cruk-homeopathy", "src-macmillan-homeopathy", "src-milazzo-2006-ejc", "src-wagenknecht-2022-review", "src-local-apha-handout"],
+        "certainty": "very_low_to_none_for_a_general_claim"
+      },
+      "limitations": "Pooling unlike preparations, routes, and study designs under the single word 'homeopathy' is itself a methodological error this card exists to avoid; no qualifying controlled human evidence supports a general claim, and the largest cited case series lacks a comparator, independent replication, and disclosed treatment details.",
+      "what_was_not_shown": "No credible evidence that homeopathy, as a general modality, affects tumor response, progression, recurrence, or survival for any cancer type.",
+      "publication_integrity": {"status": "mixed_across_cited_sources", "notes": "See individual sources; the case-series claim itself has never been an indexed, replicated clinical trial."},
+      "safety": {
+        "never_imply": ["cancer prevention", "cancer treatment", "cancer cure", "tumor control", "survival benefit"],
+        "known_concerns": ["the single greatest risk of a general 'homeopathy for cancer' claim is that a patient or family delays or forgoes effective oncology care based on it"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Continue all prescribed oncology treatment as directed. Disclose the exact label of any homeopathic product in use to the treating oncology team.",
+        "red_flags_requiring_escalation": ["a patient or caregiver considering homeopathy instead of, or before, recommended oncology treatment"]
+      },
+      "state": "blocked_unsupported",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-nsclc-addon-homeopathy-retracted",
+      "cancer_context": "Non-small-cell lung cancer (NSCLC)",
+      "disease_state": "active disease",
+      "treatment_context": "Add-on to conventional oncology treatment",
+      "population": "Adults with NSCLC",
+      "claim_or_purpose_studied": "Quality of life and overall survival with individualized add-on homeopathy versus placebo",
+      "intervention": {
+        "formulation_category": "individualized_classical",
+        "ingredients_known": "not applicable -- article retracted",
+        "potency_as_study_metadata": "not applicable -- article retracted",
+        "route": "not_reported_here_due_to_retraction",
+        "carrier_excipients": "not_reported",
+        "co_interventions": ["standard NSCLC oncology treatment (background)"],
+        "formulation_generalization_note": "The underlying data are retracted for data falsification/manipulation; no formulation-specific conclusion may be drawn from this study at all, retracted or otherwise."
+      },
+      "comparator": "Placebo, three-arm, double-blind, randomized (as originally reported)",
+      "sample_size": "as originally reported; not re-stated here because the dataset's integrity is compromised",
+      "outcomes_prespecified": ["quality of life", "overall survival"],
+      "outcome_type": "mixed",
+      "result_direction": "retracted",
+      "evidence": {
+        "summary": "The prominent 2020 Frass et al. paper (The Oncologist, DOI 10.1002/onco.13548) reporting improved quality of life and prolonged survival with add-on homeopathy in NSCLC was retracted on 2025-11-24 after the Austrian Agency for Research Integrity found evidence of data falsification/manipulation (reported to the journal August 2022); five co-authors had formally requested withdrawal of their own authorship before the retraction.",
+        "source_ids": ["src-frass-2020-oncologist-retracted", "src-frass-2020-retraction-notice"],
+        "certainty": "none_integrity_compromised"
+      },
+      "limitations": "Not merely low-quality evidence -- the dataset itself is subject to a documented, agency-confirmed integrity finding. No statistical or methodological re-analysis can rehabilitate a falsified dataset.",
+      "what_was_not_shown": "No credible evidence remains that add-on individualized homeopathy improves quality of life or survival in NSCLC; the original positive finding cannot be relied upon at all.",
+      "publication_integrity": {"status": "retracted", "notes": "Retracted 2025-11-24; see src-frass-2020-retraction-notice. Any future republication drawing on the same dataset is ineligible absent an independent integrity review establishing otherwise."},
+      "safety": {
+        "never_imply": ["survival benefit", "quality-of-life benefit", "any conclusion from this specific dataset"],
+        "known_concerns": ["this is the single most cited 'positive' homeopathy-oncology RCT in lay and practitioner materials and must be actively corrected wherever it is referenced, not merely omitted"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Continue all prescribed oncology treatment as directed. Disclose the exact label of any homeopathic product in use to the treating oncology team.",
+        "red_flags_requiring_escalation": ["encountering this specific paper cited as current evidence elsewhere -- flag for correction"]
+      },
+      "state": "blocked_integrity",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-banerji-protocol-breast-feasibility",
+      "cancer_context": "Advanced breast cancer",
+      "disease_state": "advanced/active disease",
+      "treatment_context": "Feasibility study, relationship to concurrent oncology care not established in a completed dataset",
+      "population": "Adults with advanced breast cancer at Meir Medical Center",
+      "claim_or_purpose_studied": "Feasibility, adherence, quality of life, and tumor outcomes of the Banerji protocol",
+      "intervention": {
+        "formulation_category": "fixed_protocol_complex",
+        "ingredients_known": "not_reported_no_results_posted",
+        "potency_as_study_metadata": "not_reported_no_results_posted",
+        "route": "not_reported_no_results_posted",
+        "carrier_excipients": "not_reported",
+        "co_interventions": "not_reported",
+        "formulation_generalization_note": "No results exist to generalize from; this card documents the trial's registry status, not a finding."
+      },
+      "comparator": "not_reported_no_results_posted",
+      "sample_size": "0 enrolled per withdrawal reason",
+      "outcomes_prespecified": ["feasibility", "adherence", "quality of life", "tumor outcomes"],
+      "outcome_type": "not_applicable",
+      "result_direction": "unavailable",
+      "evidence": {
+        "summary": "ClinicalTrials.gov NCT02190539, 'The Banerji Protocol for Advanced Breast Cancer -- Feasibility Study' (Meir Medical Center, PI Moshe Frenkel), is registered as WITHDRAWN with reason 'not able to recruit patients'; status last verified 2019-08; no results are posted.",
+        "source_ids": ["src-nct02190539"],
+        "certainty": "none_no_results"
+      },
+      "limitations": "A withdrawn trial with zero enrollment and no posted results provides no evidence of feasibility, safety, or efficacy in any direction.",
+      "what_was_not_shown": "Nothing -- the trial did not proceed to generate data.",
+      "publication_integrity": {"status": "withdrawn_no_results", "notes": "Registry status only; no publication exists to assess for integrity."},
+      "safety": {
+        "never_imply": ["this protocol was studied and found feasible or beneficial", "any tumor-outcome claim"],
+        "known_concerns": ["a withdrawn trial should not be cited in patient- or practitioner-facing material as if it produced a result"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Continue all prescribed oncology treatment as directed. Disclose the exact label of any homeopathic product in use to the treating oncology team.",
+        "red_flags_requiring_escalation": []
+      },
+      "state": "blocked_no_results",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-metastatic-breast-substitution-case",
+      "cancer_context": "Metastatic breast cancer",
+      "disease_state": "metastatic/active disease",
+      "treatment_context": "Homeopathy used in place of standard oncology care",
+      "population": "One patient (case report)",
+      "claim_or_purpose_studied": "Not a claim of benefit -- a documented instance of treatment substitution",
+      "intervention": {
+        "formulation_category": "unclear_preparation",
+        "ingredients_known": "not_reported",
+        "potency_as_study_metadata": "not_reported",
+        "route": "not_reported",
+        "carrier_excipients": "not_reported",
+        "co_interventions": "none -- standard oncology care was foregone per the case report",
+        "formulation_generalization_note": "A single case report cannot generalize to any formulation's safety or efficacy; it is registered here purely as a harm signal."
+      },
+      "comparator": "none (single case)",
+      "sample_size": 1,
+      "outcomes_prespecified": ["not applicable -- case report"],
+      "outcome_type": "not_applicable",
+      "result_direction": "negative_safety_signal",
+      "evidence": {
+        "summary": "A 2025 Journal of Pain and Symptom Management case report describes a patient with metastatic breast cancer who used homeopathy in place of standard oncology care.",
+        "source_ids": ["src-jpsm-2025-case-report"],
+        "certainty": "not_applicable_safety_signal_only"
+      },
+      "limitations": "A single case report cannot establish efficacy or population-level risk; it is evidence of a real event, not a rate or a mechanism.",
+      "what_was_not_shown": "Not an efficacy question -- this card is not about whether homeopathy 'worked,' it is about the risk of using it as a substitute for standard care.",
+      "publication_integrity": {"status": "active", "notes": "No integrity concern identified; used strictly as a safety signal per the proposal brief."},
+      "safety": {
+        "never_imply": ["that this reflects poorly on the patient", "that this is an isolated or unlikely scenario"],
+        "known_concerns": ["treatment substitution/delay is a documented, serious harm pathway associated with homeopathy use in cancer care -- see also the Posadzki et al. acute-lymphocytic-leukemia disease-progression finding described in source-assessment.md"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Emphasize timely re-engagement with oncology and palliative care, framed without blaming the patient. Disclose any homeopathic product's exact label to the treating team.",
+        "red_flags_requiring_escalation": ["any patient reporting they have stopped or are considering stopping standard oncology treatment in favor of homeopathy"]
+      },
+      "state": "avoid",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-global-wellbeing-fatigue-qol",
+      "cancer_context": "Mixed cancer types",
+      "disease_state": "active disease, during treatment",
+      "treatment_context": "Individualized or combination homeopathy as an adjunct",
+      "population": "Adults with cancer undergoing treatment",
+      "claim_or_purpose_studied": "Global health, wellbeing, fatigue, quality of life, anxiety, or depression",
+      "intervention": {
+        "formulation_category": "individualized_classical",
+        "ingredients_known": "varies by study; not a single preparation",
+        "potency_as_study_metadata": "varies by study",
+        "route": "oral_pellets_or_drops_varies_by_study",
+        "carrier_excipients": "not_reported",
+        "co_interventions": "varies; several studies allowed access to other integrative treatments concurrently",
+        "formulation_generalization_note": "Results are heterogeneous across differing individualized prescriptions and cannot be pooled into a single formulation-level conclusion."
+      },
+      "comparator": "usual care or placebo, varies by study",
+      "sample_size": "heterogeneous across included studies (e.g. one Austrian RCT enrolled 410 patients)",
+      "outcomes_prespecified": ["global health status", "fatigue", "quality of life", "anxiety", "depression"],
+      "outcome_type": "self_reported",
+      "result_direction": "mixed",
+      "evidence": {
+        "summary": "The 2022 Wagenknecht et al. systematic review found no conclusive evidence of benefit beyond placebo across heterogeneous, generally low-quality studies. One frequently cited 410-patient Austrian RCT (Frass et al., 2015 -- a different, non-retracted study by the same lead investigator as the retracted NSCLC paper) reported significant improvement on most self-reported domains, but by the trial's own reporting: constipation, diarrhea, and nausea/vomiting were NOT significantly improved; the analysis included only treatment responders rather than intent-to-treat, risking selection and responder bias; and patients retained access to other integrative treatments and flexible, individualized remedy selection, which precludes replication.",
+        "source_ids": ["src-wagenknecht-2022-review", "src-local-apha-handout"],
+        "certainty": "low_heterogeneous"
+      },
+      "limitations": "Self-reported outcomes, non-intent-to-treat/responder-only analysis in the largest cited trial, co-intervention access, and individualized (non-reproducible) remedy selection all reduce confidence. The same investigator (Frass) whose 2020 NSCLC survival paper was retracted for data falsification is the lead author of this trial, which does not itself invalidate this study but warrants added scrutiny and independent replication before any certainty upgrade.",
+      "what_was_not_shown": "No conclusive benefit beyond placebo across the literature as a whole; constipation, diarrhea, and nausea/vomiting specifically were not improved even in the most positive cited trial.",
+      "publication_integrity": {"status": "active", "notes": "No retraction on these specific studies; investigator-concentration and analysis-method concerns noted above."},
+      "safety": {
+        "never_imply": ["proven benefit for wellbeing or mood", "substitute for prescribed psychosocial or symptom-management care"],
+        "known_concerns": ["responder-only analysis inflates apparent benefit", "individualized prescribing is not reproducible as a testable product"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Continue all prescribed oncology treatment as directed. Disclose the exact label of any homeopathic product in use to the treating oncology team.",
+        "red_flags_requiring_escalation": ["worsening depression or anxiety with any suicidal ideation -- route to urgent clinical care, not further homeopathy discussion"]
+      },
+      "state": "insufficient_evidence",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-cocculine-cinv",
+      "cancer_context": "Breast cancer",
+      "disease_state": "active disease, undergoing chemotherapy",
+      "treatment_context": "Chemotherapy (FAC/FEC/TAC-type regimens with adriamycin, cyclophosphamide, 5-fluorouracil, and/or taxotere per the cited trial)",
+      "population": "Non-metastatic breast cancer patients before their first six chemotherapy cycles",
+      "claim_or_purpose_studied": "Chemotherapy-induced nausea and vomiting (CINV)",
+      "intervention": {
+        "formulation_category": "fixed_protocol_complex",
+        "ingredients_known": ["Cocculus indicus 4CH", "Nux vomica 4CH", "Petroleum 4CH", "Tabacum 4CH"],
+        "potency_as_study_metadata": "4CH (bibliographic study detail only, not an instruction)",
+        "route": "oral",
+        "carrier_excipients": "not_reported",
+        "co_interventions": ["standard antiemetic background per protocol"],
+        "formulation_generalization_note": "Cocculine is a specific fixed complex product registered in France; this result does not generalize to individualized classical homeopathy or to any other fixed complex product."
+      },
+      "comparator": "Placebo, multicenter, Jadad/Oxford quality score >=3/5",
+      "sample_size": 431,
+      "outcomes_prespecified": ["nausea", "vomiting", "global emesis", "quality of life"],
+      "outcome_type": "mixed",
+      "result_direction": "null",
+      "evidence": {
+        "summary": "A Phase III multicenter RCT (Perol et al.) in 431 non-metastatic breast cancer patients found no effect of Cocculine on nausea, vomiting, global emesis, or quality of life compared with placebo, on top of standard antiemetic care.",
+        "source_ids": ["src-local-apha-handout"],
+        "certainty": "low_single_trial_null"
+      },
+      "limitations": "Single trial; null result specific to this exact fixed formulation and these chemotherapy regimens; not evidence either for or against other homeopathic approaches to CINV.",
+      "what_was_not_shown": "No added benefit of Cocculine over placebo for CINV in this population.",
+      "publication_integrity": {"status": "active", "notes": "No integrity concern identified."},
+      "safety": {
+        "never_imply": ["effective for nausea/vomiting", "substitute for prescribed antiemetics"],
+        "known_concerns": ["patients may deprioritize effective prescribed antiemetics believing a homeopathic product is treating their nausea"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Continue prescribed antiemetics as directed; disclose any homeopathic product's exact label to the treating oncology team.",
+        "red_flags_requiring_escalation": ["persistent vomiting unable to keep fluids down"]
+      },
+      "state": "insufficient_evidence",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-endocrine-therapy-hot-flushes",
+      "cancer_context": "Breast cancer",
+      "disease_state": "post-treatment or active, receiving endocrine therapy",
+      "treatment_context": "Endocrine (hormonal) therapy",
+      "population": "Breast-cancer survivors/patients on endocrine therapy with menopausal-type symptoms",
+      "claim_or_purpose_studied": "Hot flushes and related menopausal symptoms",
+      "intervention": {
+        "formulation_category": "fixed_protocol_complex_or_individualized_single_remedy",
+        "ingredients_known": "varies -- e.g. a Hyland's Menopause combination tablet (amyl nitrate, Sanguinaria canadensis, Lachesis, and others) versus individualized single-remedy selection (e.g. Sanguinaria canadensis or Lachesis alone) per patient presentation in different cited trials",
+        "potency_as_study_metadata": "varies by study and remedy (e.g. 1:1000 to 1:1,000,000,000,000 dilutions reported for different components)",
+        "route": "oral",
+        "carrier_excipients": "not_reported",
+        "co_interventions": "none reported beyond standard endocrine therapy",
+        "formulation_generalization_note": "A fixed combination tablet and an individualized single remedy are not the same intervention and must not be pooled into one result."
+      },
+      "comparator": "placebo or usual care, varies by study",
+      "sample_size": "varies by study; not pooled here",
+      "outcomes_prespecified": ["SF-36 quality-of-life domains", "hot-flush frequency/severity"],
+      "outcome_type": "self_reported",
+      "result_direction": "mixed",
+      "evidence": {
+        "summary": "Per the local APHA handout's citations, one triple-blind RCT (Frenkel 2015 summary) reported significantly improved general health with a combination Hyland's Menopause tablet and with individualized Sanguinaria/Lachesis selection; a separate SF-36-based study (Shneerson et al., 2013) reported improved quality of life. Null and adverse-event findings across the broader trial literature are known to exist (per the proposal brief) and must be preserved alongside these positive reports rather than cited alone.",
+        "source_ids": ["src-local-apha-handout"],
+        "certainty": "low_mixed_not_independently_pooled"
+      },
+      "limitations": "Combination and individualized approaches are conflated in lay summaries of this literature; sample sizes, blinding quality, and exact remedy identity vary; this card intentionally does not present a single pooled verdict.",
+      "what_was_not_shown": "No single exact formulation has been shown, in independently replicated high-quality trials, to reliably reduce hot flushes for endocrine-therapy patients.",
+      "publication_integrity": {"status": "active", "notes": "No integrity concern identified on these specific citations; full independent verification of each trial is still pending (see interview-decisions.md)."},
+      "safety": {
+        "never_imply": ["proven treatment for hot flushes", "substitute for prescribed endocrine-therapy symptom management"],
+        "known_concerns": ["amyl nitrate is a pharmacologically active vasodilator, not an inert substance, when present in a combination product at a low dilution -- product-level ingredient disclosure matters even within a 'homeopathic' label"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Continue prescribed endocrine therapy as directed; disclose any product's exact label and ingredient list to the treating oncology team.",
+        "red_flags_requiring_escalation": ["chest pain, fainting, or severe headache after taking a product containing amyl nitrate or similar vasoactive ingredients"]
+      },
+      "state": "insufficient_evidence",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-traumeel-mucositis",
+      "cancer_context": "Mixed cancer types",
+      "disease_state": "active disease, undergoing chemotherapy and/or radiotherapy",
+      "treatment_context": "Chemotherapy and/or radiotherapy associated oral mucositis",
+      "population": "Patients with treatment-associated oral mucositis",
+      "claim_or_purpose_studied": "Prevention or reduction of oral mucositis severity/duration",
+      "intervention": {
+        "formulation_category": "fixed_protocol_complex",
+        "ingredients_known": ["Traumeel S is a multi-ingredient complex (e.g. Arnica montana, Calendula officinalis, Hamamelis virginiana, and others per manufacturer formulation)"],
+        "potency_as_study_metadata": "multi-ingredient complex; component potencies vary by ingredient",
+        "route": "mouth_rinse_or_oral_solution",
+        "carrier_excipients": "not_reported",
+        "co_interventions": "standard mucositis-prevention care, varies by study",
+        "formulation_generalization_note": "Traumeel S is a specific proprietary multi-ingredient complex product and must never be generalized to classical individualized homeopathy or to a single-ingredient remedy."
+      },
+      "comparator": "placebo mouth rinse, varies by study",
+      "sample_size": "small in the earliest pilot; larger in later trials (exact current N pending re-verification)",
+      "outcomes_prespecified": ["mucositis incidence", "severity", "duration"],
+      "outcome_type": "objective_and_self_reported",
+      "result_direction": "mixed",
+      "evidence": {
+        "summary": "An early small pilot reported a positive signal for Traumeel S mouth rinse in reducing mucositis; later and/or larger trials have produced null or conflicting results (exact citations pending full re-verification -- see interview-decisions.md H-007). Both the early positive pilot and any later null/conflicting trial must be modeled as separate, explicitly linked findings, never averaged into a single number.",
+        "source_ids": ["src-local-apha-handout"],
+        "certainty": "low_pending_full_replication_review"
+      },
+      "limitations": "Small early pilot with high risk of chance finding; replication status and risk-of-bias of later trials not yet fully re-verified in this pass.",
+      "what_was_not_shown": "No independently replicated, low-risk-of-bias demonstration that Traumeel S prevents or reduces oral mucositis.",
+      "publication_integrity": {"status": "active", "notes": "No integrity concern identified; replication completeness pending."},
+      "safety": {
+        "never_imply": ["proven mucositis prevention", "equivalence to classical single-remedy homeopathy"],
+        "known_concerns": ["multi-ingredient complex products carry their own excipient/allergen profile independent of any homeopathic dilution question"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Continue prescribed oral-care and mucositis-prevention protocols as directed; disclose any product's exact label to the treating oncology team.",
+        "red_flags_requiring_escalation": ["inability to swallow saliva", "signs of oral infection or fever"]
+      },
+      "state": "research_only",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-calendula-radiodermatitis",
+      "cancer_context": "Breast cancer",
+      "disease_state": "active disease, undergoing radiotherapy",
+      "treatment_context": "Breast radiotherapy",
+      "population": "Patients receiving breast radiotherapy",
+      "claim_or_purpose_studied": "Acute radiodermatitis prevention/severity",
+      "intervention": {
+        "formulation_category": "topical_botanical",
+        "ingredients_known": ["Calendula officinalis topical preparation"],
+        "potency_as_study_metadata": "topical botanical preparation, not a high-dilution homeopathic remedy in the classical sense",
+        "route": "topical",
+        "carrier_excipients": "not_reported",
+        "co_interventions": "standard radiodermatitis skin care, varies by study",
+        "formulation_generalization_note": "A topical botanical (Calendula) preparation is formulation-specific and is explicitly NOT evidence for ultra-dilute homeopathy generally; this is one of the clearest examples in this proposal of why formulation categories cannot be pooled."
+      },
+      "comparator": "usual skin care or another topical agent, varies by study",
+      "sample_size": "small in the older trial cited",
+      "outcomes_prespecified": ["radiodermatitis incidence/severity"],
+      "outcome_type": "objective",
+      "result_direction": "preliminary_positive_signal",
+      "evidence": {
+        "summary": "An older trial and a related Cochrane-adjacent review reported a preliminary positive signal for topical Calendula in reducing acute radiodermatitis severity; current radiodermatitis clinical guidance and more recent replication status require independent re-check before any certainty upgrade.",
+        "source_ids": ["src-local-apha-handout"],
+        "certainty": "low_preliminary"
+      },
+      "limitations": "Older, small trial; topical botanical formulation-specific; current guideline alignment and replication not yet independently re-verified in this pass.",
+      "what_was_not_shown": "No confirmation, in current high-quality radiodermatitis guidance, that topical Calendula is a recommended standard-of-care agent.",
+      "publication_integrity": {"status": "active", "notes": "No integrity concern identified."},
+      "safety": {
+        "never_imply": ["proven radiodermatitis treatment", "evidence for ultra-dilute homeopathic remedies generally"],
+        "known_concerns": ["topical botanical products can cause contact allergy/irritation independent of any homeopathic framing"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Continue prescribed radiotherapy skin-care guidance as directed; disclose any topical product's exact label to the treating oncology/radiation team before use on irradiated skin.",
+        "red_flags_requiring_escalation": ["skin breakdown, infection signs, or product applied shortly before a radiotherapy session without clearance from the radiation team"]
+      },
+      "state": "research_only",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-arnica-breast-surgery",
+      "cancer_context": "Breast cancer",
+      "disease_state": "active disease, perioperative",
+      "treatment_context": "Breast surgery",
+      "population": "Patients undergoing breast surgery",
+      "claim_or_purpose_studied": "Bleeding, seroma, pain, or recovery",
+      "intervention": {
+        "formulation_category": "high_dilution_or_mother_tincture_varies_by_study",
+        "ingredients_known": ["Arnica montana"],
+        "potency_as_study_metadata": "varies by study, from mother tincture to high-dilution preparations -- these are not equivalent and are not pooled here",
+        "route": "oral_or_topical_varies_by_study",
+        "carrier_excipients": "not_reported",
+        "co_interventions": "standard perioperative care",
+        "formulation_generalization_note": "Mother-tincture Arnica and high-dilution Arnica are different formulations studied in different trials and are not interchangeable."
+      },
+      "comparator": "placebo, varies by study",
+      "sample_size": "varies by study; small in most",
+      "outcomes_prespecified": ["bruising", "bleeding", "seroma", "pain", "recovery time"],
+      "outcome_type": "mixed",
+      "result_direction": "mixed",
+      "evidence": {
+        "summary": "The perioperative Arnica literature for breast surgery is mixed, with null and positive findings across small trials using different preparations (mother tincture vs. high dilution) and different comparators; no current high-quality synthesis was identified in this pass that justifies a certainty upgrade.",
+        "source_ids": [],
+        "certainty": "low_mixed_pending_synthesis"
+      },
+      "limitations": "Small trials, heterogeneous preparations and outcomes, and no identified current high-quality systematic synthesis in this pass.",
+      "what_was_not_shown": "No reliable evidence that any single Arnica preparation reduces bleeding, seroma, or improves recovery after breast surgery.",
+      "publication_integrity": {"status": "active", "notes": "No integrity concern identified; full source list pending literature-review pass (interview-decisions.md H-007)."},
+      "safety": {
+        "never_imply": ["proven surgical-recovery benefit"],
+        "known_concerns": ["Arnica mother tincture is toxic if ingested in non-homeopathic (undiluted) quantities and is generally intended for topical/highly diluted oral use only; product mislabeling of dilution is a real risk category"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Follow the surgical team's perioperative instructions; disclose any Arnica or other product's exact label and preparation (mother tincture vs. dilution) before surgery, given bleeding-risk and wound-healing considerations.",
+        "red_flags_requiring_escalation": ["unexpected bleeding or wound-healing problems after using any topical or oral herbal/homeopathic product perioperatively"]
+      },
+      "state": "insufficient_evidence",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-preclinical-animal-liver-sarcoma",
+      "cancer_context": "Chemically induced liver tumors (rats) and sarcomas (mice)",
+      "disease_state": "not_applicable_animal_model",
+      "treatment_context": "not_applicable_animal_model",
+      "population": "Rats and mice (animal model, not human)",
+      "claim_or_purpose_studied": "Inhibition of chemically induced carcinogenesis",
+      "intervention": {
+        "formulation_category": "high_dilution",
+        "ingredients_known": ["Ruta graveolens", "Hydrastis canadensis", "Lycopodium clavatum", "Thuja occidentalis", "Phosphorus"],
+        "potency_as_study_metadata": "varies by preparation (e.g. 200C, 1M reported for related in vitro work in the local handout); bibliographic detail only",
+        "route": "not_applicable_animal_model",
+        "carrier_excipients": "not_reported",
+        "co_interventions": "none -- animal carcinogenesis model",
+        "formulation_generalization_note": "Animal-model results for these preparations do not generalize to human dosing, safety, or efficacy under any circumstance."
+      },
+      "comparator": "untreated or vehicle-treated animals, varies by study",
+      "sample_size": "animal-model N, not re-stated here",
+      "outcomes_prespecified": ["tumor incidence in the chemically induced model"],
+      "outcome_type": "objective",
+      "result_direction": "positive_in_animal_model_only",
+      "evidence": {
+        "summary": "The pure.johnshopkins.edu-indexed study and related citations in the local APHA handout report that these preparations inhibited chemically induced carcinogenesis in rat/mouse models.",
+        "source_ids": ["src-jhu-carcinogenesis-inhibition", "src-local-apha-handout"],
+        "certainty": "not_applicable_preclinical_only"
+      },
+      "limitations": "Animal carcinogenesis models do not predict human treatment efficacy, dosing, or safety; this is prohibited from any human inference by design.",
+      "what_was_not_shown": "No human benefit, dose, or safety information whatsoever.",
+      "publication_integrity": {"status": "active", "notes": "No integrity concern identified."},
+      "safety": {
+        "never_imply": ["human cancer prevention or treatment", "safe human dosing derived from the animal dose"],
+        "known_concerns": ["several of these source plants (e.g. Thuja) are toxic in non-homeopathic concentrations"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Not applicable to a patient action -- this is preclinical research context only.",
+        "red_flags_requiring_escalation": []
+      },
+      "state": "research_only",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-invitro-cell-lines-mixed",
+      "cancer_context": "Prostate and breast cancer cell lines",
+      "disease_state": "not_applicable_in_vitro",
+      "treatment_context": "not_applicable_in_vitro",
+      "population": "Cultured human cancer cell lines (e.g. MCF-7, MDA-MB-231, PC3), not human subjects",
+      "claim_or_purpose_studied": "Cytotoxicity, apoptosis, or gene-expression effects",
+      "intervention": {
+        "formulation_category": "high_dilution",
+        "ingredients_known": ["Conium maculatum", "Sabal serrulata", "Thuja occidentalis", "Asterias rubens", "Phytolacca decandra", "Carcinosin"],
+        "potency_as_study_metadata": "ultramolecular/high dilutions reported in the local handout's cited in vitro work",
+        "route": "not_applicable_in_vitro",
+        "carrier_excipients": "not_reported",
+        "co_interventions": "none -- cell culture",
+        "formulation_generalization_note": "In vitro cell-line results, positive or negative, do not translate into a clinical claim in either direction and must not be converted into patient advice."
+      },
+      "comparator": "vehicle/placebo-treated cells",
+      "sample_size": "not_applicable_in_vitro",
+      "outcomes_prespecified": ["cell viability/growth", "apoptosis markers", "gene expression"],
+      "outcome_type": "objective",
+      "result_direction": "mixed",
+      "evidence": {
+        "summary": "The local APHA handout cites multiple in vitro studies reporting apoptotic/cytotoxic effects of ultramolecular Conium, Thuja, Carcinosin and related preparations against breast and cervical cancer cell lines. A separate, independently identified study (Thangapazham et al., PMID 17101765) reported NO measurable effect on cell growth or the tested gene expression for a materially overlapping set of preparations (Conium, Sabal, Thuja, Asterias, Phytolacca, Carcinosin) against prostate and breast cancer cell lines. Both the positive and negative in vitro findings are preserved here rather than presenting only the handout's favorable citations.",
+        "source_ids": ["src-local-apha-handout", "src-thangapazham-2005-invitro-negative"],
+        "certainty": "not_applicable_preclinical_only_and_conflicting"
+      },
+      "limitations": "In vitro results are highly formulation-, concentration-, and cell-line-dependent and frequently fail to replicate across labs, exactly as seen here (positive vs. null on overlapping preparations); no clinical inference is possible in either direction.",
+      "what_was_not_shown": "No human efficacy, safety, or dosing information; the field itself shows conflicting in vitro results even before any human question is asked.",
+      "publication_integrity": {"status": "active", "notes": "No integrity concern identified on either source."},
+      "safety": {
+        "never_imply": ["human anti-cancer effect, positive or ruled out", "that positive cell-line results predict patient benefit"],
+        "known_concerns": ["publication and citation bias toward positive in vitro results is a known pattern in this literature; this card exists specifically to counter that by preserving the negative finding"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Not applicable to a patient action -- this is preclinical research context only.",
+        "red_flags_requiring_escalation": []
+      },
+      "state": "research_only",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    },
+    {
+      "id": "card-psorinum-sole-treatment-case-series",
+      "cancer_context": "Gallbladder, liver, lung, oral, pancreatic, and stomach cancers",
+      "disease_state": "metastatic and non-metastatic, mixed",
+      "treatment_context": "Reported as the sole anti-cancer treatment in at least one described case, versus a hybrid conventional/integrative protocol in a larger retrospective series",
+      "population": "246 patients in a retrospective series from a single Kolkata clinic, per the local APHA handout",
+      "claim_or_purpose_studied": "Tumor response / complete or partial response",
+      "intervention": {
+        "formulation_category": "unclear_preparation_nosode_or_low_dilution",
+        "ingredients_known": ["Psorinum-6x, described in the handout as derived from scabies-infestation blister fluid"],
+        "potency_as_study_metadata": "6x, dosed at .02 mL/kg body weight/day per the handout's description -- recorded here as a bibliographic study detail from a case series, never as an instruction",
+        "route": "oral",
+        "carrier_excipients": "not_reported",
+        "co_interventions": "reported in the handout as, in at least one description, the sole anti-cancer treatment used, with no adverse effects claimed",
+        "formulation_generalization_note": "A single-center, retrospective, uncontrolled case series describing a formulation used as sole cancer treatment cannot generalize to any safety or efficacy conclusion, and the 'no adverse effects' claim in particular is unverifiable from this source alone."
+      },
+      "comparator": "none -- uncontrolled retrospective series",
+      "sample_size": 246,
+      "outcomes_prespecified": ["complete response", "partial response", "unspecified per source"],
+      "outcome_type": "not_prespecified_retrospective",
+      "result_direction": "case_series_uncontrolled",
+      "evidence": {
+        "summary": "The local APHA handout describes a retrospective series of 246 gallbladder/liver/lung/oral/pancreatic/stomach cancer patients from a single clinic (Critical Cancer Management Research Centre & Clinic, Kolkata), including a claim that Psorinum-6x achieved 'complete response in metastatic adenocarcinoma of the gallbladder... as the sole anti-cancer treatment... for 2 years, all without adverse effects.'",
+        "source_ids": ["src-local-apha-handout"],
+        "certainty": "none_uncontrolled_single_center_unverifiable"
+      },
+      "limitations": "No comparator, no independent verification, no disclosed follow-up methodology, retrospective and single-center; a 'sole anti-cancer treatment... without adverse effects' claim for a metastatic solid tumor is exactly the pattern that should raise scrutiny rather than confidence, given the near-total absence of documented spontaneous remission at that scale without treatment.",
+      "what_was_not_shown": "No controlled evidence that Psorinum-6x, or any homeopathic preparation used as a sole treatment, produces tumor response in any of these cancer types.",
+      "publication_integrity": {"status": "active_but_unverified_primary_claim", "notes": "Sourced only from the conference handout's citation; the primary retrospective series itself was not independently located and re-verified in this pass."},
+      "safety": {
+        "never_imply": ["that homeopathy alone can produce tumor response in metastatic cancer", "that this case series demonstrates safety of using homeopathy as a sole treatment"],
+        "known_concerns": ["this is precisely the treatment-substitution pattern flagged as harmful elsewhere in this proposal (see card-metastatic-breast-substitution-case and the Posadzki et al. acute-lymphocytic-leukemia finding in source-assessment.md); a case series reporting this approach 'worked' does not make the approach safe to generalize"],
+        "care_delay_warning": "Homeopathy must never replace, delay, interrupt, reduce the dose of, or be used to refuse surgery, radiotherapy, chemotherapy, endocrine therapy, immunotherapy, targeted therapy, transplantation, palliative care, prescribed supportive medicines, or clinical follow-up.",
+        "standard_care_statement": "Continue all prescribed oncology treatment as directed. Disclose the exact label of any homeopathic product in use to the treating oncology team.",
+        "red_flags_requiring_escalation": ["any patient considering Psorinum or any other single homeopathic preparation as a sole cancer treatment"]
+      },
+      "state": "avoid",
+      "review_status": "pending_oncology_pharmacy_and_evidence_methodology_approval"
+    }
+  ]
+}
