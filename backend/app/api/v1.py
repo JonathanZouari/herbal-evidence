@@ -74,7 +74,9 @@ def me(conn: Conn, user: User):
 
 @router.get("/herbs")
 def herbs(conn: Conn):
-    return conn.execute("select id, name_he, name_en, latin_name from public.herbs order by name_he").fetchall()
+    return conn.execute(
+        "select id, name_he, name_en, latin_name, origin_regions, traditions, history_he from public.herbs order by name_he"
+    ).fetchall()
 
 
 # ------------------------------------------------------------------ user

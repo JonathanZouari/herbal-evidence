@@ -1,5 +1,8 @@
 """Integration tests against the dev DB. Everything runs in ONE outer transaction that is rolled back."""
 
+import psycopg
+import pytest
+
 from app.domain.status import TRANSITIONS
 from tests.conftest import as_, needs_db, submit
 from tests.helpers import draft
@@ -126,6 +129,19 @@ def test_security_headers(client):
     r = client.get("/api/v1/health")
     assert r.headers["content-security-policy"].startswith("default-src 'none'")
     assert r.headers["x-content-type-options"] == "nosniff"
+
+
+def test_herbs_include_origins(client, conn):
+    conn.execute("""insert into public.herbs (name_he, name_en, origin_regions, traditions, history_he)
+                    values ('פיטסט', 'pytest-herb', '{south_america}', '{amazonian,andean}', 'MOCK היסטוריה')""")
+    r = client.get("/api/v1/herbs")     # public: no user header
+    assert r.status_code == 200
+    herb = next(h for h in r.json() if h["name_en"] == "pytest-herb")
+    assert herb["origin_regions"] == ["south_america"]
+    assert herb["traditions"] == ["amazonian", "andean"]
+    assert herb["history_he"] == "MOCK היסטוריה"
+    with pytest.raises(psycopg.errors.CheckViolation), conn.transaction():     # fixed value sets only
+        conn.execute("update public.herbs set origin_regions = '{atlantis}' where name_en = 'pytest-herb'")
 
 
 def test_staff_views_and_reviews(client, conn, users):
