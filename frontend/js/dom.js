@@ -37,6 +37,19 @@ export function $(selector, root = document) {
   return root.querySelector(selector);
 }
 
+/** "Characters left" hint for a field with maxlength, kept live on input and linked via aria-describedby. */
+export function charCounter(field) {
+  const max = field.maxLength;
+  const el = h("span", { class: "hint", id: `${field.id}-count` });
+  const update = () => {
+    el.textContent = `נותרו ${(max - field.value.length).toLocaleString("he-IL")} מתוך ${max.toLocaleString("he-IL")} תווים`;
+  };
+  field.setAttribute("aria-describedby", [field.getAttribute("aria-describedby"), el.id].filter(Boolean).join(" "));
+  field.addEventListener("input", update);
+  update();
+  return el;
+}
+
 /** Only http(s) links may be rendered; anything else (javascript:, data:) becomes plain text. */
 export function safeUrl(url) {
   try {

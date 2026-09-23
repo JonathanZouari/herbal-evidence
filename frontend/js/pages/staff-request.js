@@ -2,7 +2,7 @@
 // Only the assigned researcher can publish or save a reusable review (the backend enforces this too).
 
 import { get, patch, post, put } from "../api.js";
-import { bdi, clear, extLink, formatDate, h, param } from "../dom.js";
+import { bdi, charCounter, clear, extLink, formatDate, h, param } from "../dom.js";
 import { AI_FLAGS, errorMessage, internalStatus, JOB_STATUS, jobErrorLabel } from "../i18n.js";
 import { confirmDialog, focusHeading, main, requireAuth, showError, toast } from "../layout.js";
 import { blankContent, buildEditor, toSourceRefs } from "../render/editor.js";
@@ -90,7 +90,7 @@ function clarifyForm() {
     e.preventDefault();
     if (ta.value.trim()) act(() => post(`${base}/clarifications`, { text: ta.value.trim() }), "השאלה נשלחה למשתמש/ת.");
   } }, h("h2", {}, "שאלת הבהרה למשתמש/ת"),
-  h("div", { class: "field" }, h("label", { for: "clar-q" }, "השאלה"), ta),
+  h("div", { class: "field" }, h("label", { for: "clar-q" }, "השאלה"), ta, charCounter(ta)),
   h("button", { class: "btn secondary", type: "submit" }, "שליחת שאלה"));
 }
 
