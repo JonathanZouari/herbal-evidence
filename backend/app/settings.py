@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     app_env: str = "dev"
     log_level: str = "INFO"
     supabase_url: str
+    supabase_secret_key: SecretStr | None = None
     database_url: str
     cors_allowed_origins: str = ""
     # quotas (D-018)
@@ -31,6 +32,8 @@ class Settings(BaseSettings):
     ncbi_tool: str = "herbal-evidence"
     ncbi_email: str = ""
     literature_max_results: int = 20
+    # herb reference photo (Wikimedia; no key needed, but their API etiquette asks for a contact address)
+    wikimedia_contact_email: str = ""
 
     @property
     def jwt_issuer(self) -> str:

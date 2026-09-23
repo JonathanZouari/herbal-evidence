@@ -8,7 +8,17 @@ from urllib.parse import urlsplit
 
 import httpx
 
-ALLOWED_HOSTS = frozenset({"eutils.ncbi.nlm.nih.gov", "www.ebi.ac.uk", "api.openai.com"})
+ALLOWED_HOSTS = frozenset({"eutils.ncbi.nlm.nih.gov", "www.ebi.ac.uk", "api.openai.com",
+                          "en.wikipedia.org", "commons.wikimedia.org", "upload.wikimedia.org"})
+
+# One more trusted host, added once at process startup: the operator's own Supabase project (its host
+# varies per deployment, so it can't be a fixed literal above). Never attacker-influenced.
+_extra_allowed_host: str | None = None
+
+
+def configure_allowed_host(host: str) -> None:
+    global _extra_allowed_host
+    _extra_allowed_host = host.lower()
 
 
 class FetchError(Exception):
@@ -46,7 +56,8 @@ def check_url(url: str) -> None:
         raise FetchError("url_blocked", False, "credentials in url")
     if parts.port not in (None, 443):
         raise FetchError("url_blocked", False, "port not allowed")
-    if (parts.hostname or "").lower() not in ALLOWED_HOSTS:
+    host = (parts.hostname or "").lower()
+    if host not in ALLOWED_HOSTS and host != _extra_allowed_host:
         raise FetchError("url_blocked", False, f"host not allowed: {parts.hostname}")
 
 
@@ -58,11 +69,11 @@ def _status_error(status: int) -> FetchError:
 
 class SafeClient:
     def __init__(self, transport: httpx.BaseTransport | None = None, max_bytes: int = 5_000_000,
-                 timeout: httpx.Timeout | None = None):
+                 timeout: httpx.Timeout | None = None, user_agent: str = "herbal-evidence/0.1"):
         self.max_bytes = max_bytes
         self._http = httpx.Client(transport=transport, follow_redirects=False,
                                   timeout=timeout or httpx.Timeout(20, connect=5),
-                                  headers={"User-Agent": "herbal-evidence/0.1"})
+                                  headers={"User-Agent": user_agent})
 
     def close(self) -> None:
         self._http.close()
@@ -74,6 +85,10 @@ class SafeClient:
     def post_json(self, url: str, body: dict, *, headers: dict | None = None,
                   timeout: float | None = None) -> httpx.Response:
         return self._send("POST", url, json=body, headers=headers, timeout=timeout)
+
+    def post_bytes(self, url: str, content: bytes, *, headers: dict | None = None,
+                   timeout: float | None = None) -> httpx.Response:
+        return self._send("POST", url, content=content, headers=headers, timeout=timeout)
 
     def _send(self, method: str, url: str, *, limiter: RateLimiter | None = None, timeout: float | None = None,
               **kwargs) -> httpx.Response:

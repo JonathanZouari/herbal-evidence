@@ -9,6 +9,7 @@ import threading
 import uuid
 from contextlib import nullcontext
 from dataclasses import replace
+from urllib.parse import urlsplit
 
 from psycopg import Connection
 from psycopg.types.json import Jsonb
@@ -17,7 +18,7 @@ from psycopg_pool import ConnectionPool
 from app.ai.provider import get_provider
 from app.db import tx
 from app.jobs.research import Deps, process_research_job
-from app.research.http import SafeClient
+from app.research.http import SafeClient, configure_allowed_host
 from app.settings import Settings
 
 log = logging.getLogger("app.worker")
@@ -58,7 +59,9 @@ class Worker:
         self.settings, self.pool = settings, pool
         self.id = f"{socket.gethostname()}:{os.getpid()}:{uuid.uuid4().hex[:6]}"
         if deps is None:
-            http = SafeClient()
+            configure_allowed_host(urlsplit(settings.supabase_url).hostname or "")
+            ua = "herbal-evidence/0.1" + (f" ({settings.wikimedia_contact_email})" if settings.wikimedia_contact_email else "")
+            http = SafeClient(user_agent=ua)
             deps = Deps(http=http, provider=get_provider(settings, http), settings=settings)
         self.deps = deps
         self._stop = threading.Event()

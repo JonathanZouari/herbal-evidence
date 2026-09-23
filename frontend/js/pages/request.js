@@ -1,7 +1,7 @@
 // A user's request: status in words, clarification answers, the approved response, withdraw.
 
 import { get, post } from "../api.js";
-import { bdi, clear, formatDate, h, param } from "../dom.js";
+import { bdi, clear, extLink, formatDate, h, param } from "../dom.js";
 import { errorMessage, publicStatus } from "../i18n.js";
 import { confirmDialog, main, requireAuth, showError, toast } from "../layout.js";
 import { renderContent } from "../render/response.js";
@@ -13,6 +13,14 @@ const id = param("id");
 function badge(code) {
   const s = publicStatus(code);
   return h("span", { class: `badge ${s.tone}`, "data-icon": s.icon }, s.label);
+}
+
+function herbPhoto(r) {
+  if (!r.herb_image_url) return null;
+  return h("figure", { class: "herb-photo" },
+    h("img", { src: r.herb_image_url, alt: r.herb_name_input, loading: "lazy" }),
+    r.herb_image_attribution ? h("figcaption", { class: "muted small" },
+      extLink(r.herb_image_source_url, r.herb_image_attribution)) : null);
 }
 
 function details(r) {
@@ -80,6 +88,7 @@ async function load() {
       h("h2", { id: "resp-title" }, "התשובה לבקשה שלך"),
       h("p", { class: "badge done", "data-icon": "✔" }, "נבדקה ואושרה על ידי חוקר/ת"),
       h("p", { class: "muted small" }, `פורסמה ב-${formatDate(r.response.published_at)}`),
+      herbPhoto(r),
       renderContent(r.response.body)) : null,
     canWithdraw ? h("p", {}, h("button", { class: "btn danger", type: "button", onclick: () => withdraw(r.public_status === "published") }, "ביטול הבקשה")) : null);
 }

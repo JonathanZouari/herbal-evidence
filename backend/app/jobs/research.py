@@ -16,10 +16,11 @@ from app.ai.guard import flag_content
 from app.ai.provider import AIProvider, DraftInput, ProviderError, ProviderNotConfigured
 from app.ai.schema import DraftContent, HerbRef, ReviewContent, SourceRef, assemble_draft, none_found_draft, review_to_draft
 from app.db import tx
-from app.research import europepmc, pubmed
+from app.research import europepmc, pubmed, wikimedia
 from app.research.http import FetchError, SafeClient
 from app.research.sources import (ResearchError, Source, build_terms, dedupe, europepmc_query, link_request_sources,
                                   pubmed_query, upsert_sources)
+from app.research.storage import upload_herb_image
 from app.settings import Settings
 
 log = logging.getLogger("app.jobs")
@@ -104,9 +105,41 @@ def _start(conn: Connection, job: dict, worker: str) -> tuple[dict | None, dict 
             return None, None, f"noop:{req['status'] if req else 'missing'}"
         if req["status"] != "researching":
             _set_status(conn, req["id"], "researching")
-        herb = conn.execute("select id, name_he, name_en, latin_name from public.herbs where id = %s",
+        herb = conn.execute("select id, name_he, name_en, latin_name, image_status from public.herbs where id = %s",
                             (req["herb_id"],)).fetchone() if req["herb_id"] else None
     return req, herb, None
+
+
+def _mark_image(conn: Connection, herb_id: int, status: str, path: str | None = None,
+                attribution: str | None = None, source_url: str | None = None) -> None:
+    with tx(conn):
+        conn.execute(
+            """update public.herbs set image_status = %s, image_path = %s, image_attribution = %s,
+                  image_source_url = %s, image_fetched_at = now()
+               where id = %s and image_status = 'pending'""",
+            (status, path, attribution, source_url, herb_id),
+        )
+
+
+def _ensure_herb_image(conn: Connection, deps: Deps, herb: dict | None) -> None:
+    """Best-effort, once per herb (pending -> found|not_found): a broken image fetch must never fail the
+    request's own job. HTTP happens here, outside any transaction; only the short status update is a tx."""
+    if not herb or herb["image_status"] != "pending":
+        return
+    try:
+        result = wikimedia.fetch_plant_image(deps.http, herb["name_en"], herb["latin_name"])
+        if result is None:
+            return _mark_image(conn, herb["id"], "not_found")
+        key = deps.settings.supabase_secret_key
+        if not key:
+            log.warning("herb %s: image found but SUPABASE_SECRET_KEY not configured", herb["id"])
+            return _mark_image(conn, herb["id"], "not_found")
+        path = upload_herb_image(deps.http, deps.settings.supabase_url, key.get_secret_value(), herb["id"],
+                                 result.content, result.content_type)
+        _mark_image(conn, herb["id"], "found", path, result.attribution, result.source_url)
+    except Exception:
+        log.warning("herb %s: image fetch failed", herb["id"], exc_info=True)
+        _mark_image(conn, herb["id"], "not_found")
 
 
 def _reusable_review(conn: Connection, herb_id: int) -> tuple[dict, ReviewContent] | None:
@@ -184,6 +217,9 @@ def process_research_job(conn: Connection, job: dict, worker: str, deps: Deps) -
         req, herb, noop = _start(conn, job, worker)
         if noop:
             return noop
+
+        stage = "image"
+        _ensure_herb_image(conn, deps, herb)
 
         stage = "reuse"
         if herb and not (job.get("payload") or {}).get("fresh"):

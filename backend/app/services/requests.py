@@ -12,6 +12,7 @@ from app.ai.schema import DraftContent
 from app.auth.jwt import CurrentUser
 from app.db import tx
 from app.domain import herbs
+from app.domain.herbs import image_url as herb_image_url
 from app.domain.status import RERUNNABLE, can_transition
 from app.errors import AppError, forbidden, not_found
 from app.settings import get_settings
@@ -88,6 +89,15 @@ def get_request(conn: Connection, user: CurrentUser, rid: UUID) -> dict:
         conn.execute("select body, published_at from public.responses where request_id = %s", (rid,)).fetchone()
         if req["public_status"] == "published" else None
     )
+    herb = conn.execute(
+        """select image_path, image_attribution, image_source_url from public.herbs
+            where id = %s and image_status = 'found'""",
+        (req["herb_id"],),
+    ).fetchone() if req["herb_id"] else None
+    if herb:
+        req["herb_image_url"] = herb_image_url(get_settings().supabase_url, herb["image_path"])
+        req["herb_image_attribution"] = herb["image_attribution"]
+        req["herb_image_source_url"] = herb["image_source_url"]
     return req
 
 
