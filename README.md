@@ -17,17 +17,17 @@ The platform does **not** recommend which herb to take, does not prescribe doses
 
 | Env | Git branch | Railway env | Supabase project |
 |-----|-----------|-------------|------------------|
-| dev | `dev` | `dev` | `herbal-evidence-dev` |
+| staging | `dev` | `staging` | `herbal-evidence-dev` |
 | production | `main` | `production` | `herbal-evidence-prod` |
 
 Details and setup steps: see `docs/deployment.md`. Development status per phase is tracked in the project's Obsidian vault (`HERBAL_EVIDENCE_PROJECT/`).
 
 ## Local development (filled in as phases complete)
 
-1. `supabase start` (Phase 1)
-2. `cd backend && uv sync && uv run uvicorn app.main:app --reload` (Phase 2)
-3. `cd frontend && npx serve .` (Phase 4)
+1. Database: cloud dev project, no Docker (D-014). `supabase link --project-ref vtcmicxlujahurhetcaa`, then `supabase db push --linked`; tests: `supabase db query --linked -f supabase/tests/permissions.sql`. See `docs/data-model.md`.
+2. Backend: `cd backend && uv sync && uv run pytest -q && uv run uvicorn app.main:app --reload` (needs `backend/.env`, see `.env.example`). See `docs/architecture.md`.
+3. Frontend: copy `frontend/.env.example` to `frontend/.env` (public values only), then `python frontend/dev_server.py` → http://localhost:8080. Same CSP/headers as the Caddy container; `js/config.js` is generated from `.env`. Start the backend with `WORKER_ENABLED=true` to process research jobs. See `frontend/README.md`.
 
 ## Status
 
-Phase 0 (foundation) — in progress. See `docs/decisions.md` for engineering choices.
+Phases 3 (research worker + AI) and 4 (Hebrew RTL frontend) — done, pending review. See `docs/decisions.md` for engineering choices.
