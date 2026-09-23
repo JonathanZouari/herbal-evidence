@@ -49,8 +49,11 @@ function clarifications(r) {
     done.length ? h("ul", {}, done.map((c) => h("li", {}, h("strong", {}, bdi(c.question)), h("br"), bdi(c.answer)))) : null);
 }
 
-async function withdraw() {
-  const ok = await confirmDialog({ title: "ביטול הבקשה", body: "לאחר הביטול לא ניתן יהיה לחדש את הבקשה.", confirmLabel: "ביטול הבקשה", danger: true });
+async function withdraw(published) {
+  const body = published
+    ? "לאחר הביטול התשובה שפורסמה לא תוצג לך יותר, ולא ניתן יהיה לחדש את הבקשה."
+    : "לאחר הביטול לא ניתן יהיה לחדש את הבקשה.";
+  const ok = await confirmDialog({ title: "ביטול הבקשה", body, confirmLabel: "ביטול הבקשה", danger: true });
   if (!ok) return;
   try {
     await post(`/requests/${id}/withdraw`);
@@ -78,7 +81,7 @@ async function load() {
       h("p", { class: "badge done", "data-icon": "✔" }, "נבדקה ואושרה על ידי חוקר/ת"),
       h("p", { class: "muted small" }, `פורסמה ב-${formatDate(r.response.published_at)}`),
       renderContent(r.response.body)) : null,
-    canWithdraw ? h("p", {}, h("button", { class: "btn danger", type: "button", onclick: withdraw }, "ביטול הבקשה")) : null);
+    canWithdraw ? h("p", {}, h("button", { class: "btn danger", type: "button", onclick: () => withdraw(r.public_status === "published") }, "ביטול הבקשה")) : null);
 }
 
 if (!id) showError(root, { code: "not_found" });
