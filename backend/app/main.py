@@ -25,12 +25,20 @@ def _error(status: int, code: str, message: str = "") -> JSONResponse:
 def create_app(open_pool: bool = True) -> FastAPI:
     s = get_settings()
     logging.basicConfig(level=s.log_level)
+    logging.getLogger("httpx").setLevel(logging.WARNING)   # httpx logs full URLs at INFO (NCBI api_key is a query param)
 
     @asynccontextmanager
     async def lifespan(_: FastAPI):
+        worker = None
         if open_pool:
             db.open_pool(s.database_url)
+            if s.worker_enabled:   # D-019: in-process consumer, opt-in; tests (open_pool=False) never start it
+                from app.jobs.worker import Worker
+                worker = Worker(s, db.pool)
+                worker.start()
         yield
+        if worker:
+            worker.stop()
         if open_pool:
             db.close_pool()
 

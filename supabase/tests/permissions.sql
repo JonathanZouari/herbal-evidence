@@ -84,6 +84,7 @@ select pg_temp.expect_error('select * from public.evidence_reviews', 'reviews hi
 select pg_temp.expect_error('select * from public.literature_sources', 'sources hidden');
 select pg_temp.expect_error('select * from public.research_jobs', 'jobs hidden');
 select pg_temp.expect_error('select * from public.request_events', 'audit hidden');
+select pg_temp.expect_error('select * from public.request_sources', 'request sources hidden');
 select pg_temp.expect_error($$select public.claim_job('evil')$$, 'user cannot claim jobs');
 select pg_temp.expect_error($$insert into public.herbs (name_he, name_en) values ('x', 'x')$$, 'user cannot add herbs');
 
@@ -132,12 +133,26 @@ select pg_temp.check(public.fail_job((select id from j), 'w1', '{"e":"boom"}') =
 select pg_temp.check((select run_after > now() from public.research_jobs where id = (select id from j)), 'backoff delays retry');
 select pg_temp.check((select count(*) = 0 from public.claim_job('w1')), 'not claimable during backoff');
 
--- crash recovery: lease expired -> reclaimable; exhausted attempts -> dead
+-- crash recovery: lease expired -> reclaimable; exhausted attempts -> dead (and the request -> research_failed)
+update public.requests set status = 'researching' where id = '10000000-0000-4000-a000-00000000000b';
 update public.research_jobs set run_after = now() - interval '1 second' where id = (select id from j);
 select pg_temp.check((select attempts = 2 from public.claim_job('w1')), 'second attempt claimed');
 update public.research_jobs set lease_expires_at = now() - interval '1 second' where id = (select id from j);
 select pg_temp.check((select count(*) = 0 from public.claim_job('w3')), 'expired + exhausted job not re-run');
 select pg_temp.check((select status = 'dead' from public.research_jobs where id = (select id from j)), 'exhausted job dead');
+select pg_temp.check((select status = 'research_failed' from public.requests where id = '10000000-0000-4000-a000-00000000000b'),
+                     'dead job fails its researching request');
+
+-- MOCK seed jobs are never claimed; claims can be scoped to one request
+insert into public.research_jobs (kind, request_id, idempotency_key, payload)
+  values ('research', '10000000-0000-4000-a000-00000000000a', 'mock:1', '{"mock": true}');
+select pg_temp.check((select count(*) = 0 from public.claim_job('w1')), 'mock job not claimable');
+insert into public.research_jobs (kind, request_id, idempotency_key)
+  values ('research', '10000000-0000-4000-a000-00000000000a', 'scoped:1');
+select pg_temp.check((select count(*) = 0 from public.claim_job('w1', 60, '10000000-0000-4000-a000-00000000000b')),
+                     'scoped claim ignores other requests');
+select pg_temp.check((select idempotency_key = 'scoped:1' from public.claim_job('w1', 60, '10000000-0000-4000-a000-00000000000a')),
+                     'scoped claim finds its request');
 
 insert into public.research_jobs (kind, idempotency_key) values ('research', 'nonretry:1');
 select pg_temp.check(public.fail_job((select id from public.claim_job('w1')), 'w1', '{"e":"not configured"}', false) = 'dead',

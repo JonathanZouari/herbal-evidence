@@ -11,7 +11,8 @@ pool: ConnectionPool | None = None
 
 def open_pool(url: str) -> None:
     global pool
-    pool = ConnectionPool(url, min_size=1, max_size=10, kwargs={"row_factory": dict_row}, open=True)
+    # autocommit: reads never leave a connection "idle in transaction"; tx() is the only transaction boundary
+    pool = ConnectionPool(url, min_size=1, max_size=10, kwargs={"row_factory": dict_row, "autocommit": True}, open=True)
 
 
 def close_pool() -> None:

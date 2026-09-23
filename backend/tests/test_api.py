@@ -1,71 +1,18 @@
 """Integration tests against the dev DB. Everything runs in ONE outer transaction that is rolled back."""
 
-import uuid
-
-import psycopg
-import pytest
-from fastapi import Header
-from fastapi.testclient import TestClient
-from psycopg.rows import dict_row
-
-from app.auth.jwt import CurrentUser, current_user
-from app.db import get_conn
 from app.domain.status import TRANSITIONS
-from app.main import create_app
-from app.settings import get_settings
+from tests.conftest import as_, needs_db, submit
+from tests.helpers import draft
 
-try:
-    DB_URL = get_settings().database_url
-except Exception:  # no .env / env vars
-    DB_URL = None
-pytestmark = pytest.mark.skipif(not DB_URL, reason="DATABASE_URL not set")
-
-
-@pytest.fixture(scope="module")
-def conn():
-    with psycopg.connect(DB_URL, row_factory=dict_row) as c:
-        yield c
-        c.rollback()
-
-
-@pytest.fixture(scope="module")
-def users(conn):
-    ids = {name: uuid.uuid4() for name in ("a", "b", "res", "res2", "admin")}
-    for name, uid in ids.items():
-        conn.execute("insert into auth.users (id, email) values (%s, %s)", (uid, f"pytest-{name}-{uid}@example.invalid"))
-    conn.execute("update public.profiles set role = 'researcher' where id in (%s, %s)", (ids["res"], ids["res2"]))
-    conn.execute("update public.profiles set role = 'admin' where id = %s", (ids["admin"],))
-    return ids
-
-
-@pytest.fixture(scope="module")
-def client(conn, users):
-    app = create_app(open_pool=False)
-
-    # Same role lookup as production, but identity from a test header instead of a signed JWT.
-    def test_user(x_test_user: str = Header()) -> CurrentUser:
-        uid = uuid.UUID(x_test_user)
-        return CurrentUser(uid, conn.execute("select role from public.profiles where id = %s", (uid,)).fetchone()["role"])
-
-    app.dependency_overrides[get_conn] = lambda: conn
-    app.dependency_overrides[current_user] = test_user
-    with TestClient(app) as c:
-        yield c
-
-
-def as_(uid):
-    return {"X-Test-User": str(uid)}
-
-
-def submit(client, uid, herb="ג׳ינג׳ר", **extra):
-    return client.post("/api/v1/requests", json={"herb_name": herb, **extra}, headers=as_(uid))
+pytestmark = needs_db
 
 
 def simulate_worker(conn, rid):
-    """What the Phase 3 worker will do: claim -> researching -> draft."""
+    """Shortcut for the worker (tested in test_worker.py): researching -> draft_ready with a valid draft."""
+    from psycopg.types.json import Jsonb
     conn.execute("update public.requests set status = 'researching' where id = %s", (rid,))
     conn.execute("update public.requests set status = 'draft_ready' where id = %s", (rid,))
-    conn.execute("insert into public.response_drafts (request_id, content) values (%s, '{\"draft\": 1}')", (rid,))
+    conn.execute("insert into public.response_drafts (request_id, content) values (%s, %s)", (rid, Jsonb(draft())))
 
 
 def test_transitions_mirror_db(conn):
@@ -104,14 +51,16 @@ def test_full_lifecycle(client, conn, users):
     assert client.post(f"/api/v1/requests/{rid}/clarifications/{q.json()['id']}/answer", json={"text": "תה"},
                        headers=as_(users["a"])).status_code == 204
 
-    # only the assigned researcher approves; admin cannot
-    assert client.post(f"/api/v1/staff/requests/{rid}/publish", json={"body": {"text": "x"}},
+    # the published body must match schema v1; only the assigned researcher approves; admin cannot
+    bad = client.post(f"/api/v1/staff/requests/{rid}/publish", json={"body": {"text": "x"}}, headers=as_(users["res"]))
+    assert bad.status_code == 422 and bad.json()["error"]["code"] == "content_invalid"
+    assert client.post(f"/api/v1/staff/requests/{rid}/publish", json={"body": draft()},
                        headers=as_(users["admin"])).status_code == 403
-    assert client.post(f"/api/v1/staff/requests/{rid}/publish", json={"body": {"text": "תשובה"}},
+    assert client.post(f"/api/v1/staff/requests/{rid}/publish", json={"body": draft()},
                        headers=as_(users["res"])).status_code == 204
 
     mine = client.get(f"/api/v1/requests/{rid}", headers=as_(users["a"])).json()
-    assert mine["public_status"] == "published" and mine["response"]["body"] == {"text": "תשובה"}
+    assert mine["public_status"] == "published" and mine["response"]["body"] == draft()
 
     detail = client.get(f"/api/v1/staff/requests/{rid}", headers=as_(users["res"])).json()
     assert detail["status"] == "published" and detail["drafts"][0]["content"] == {"draft": 2}
@@ -147,6 +96,8 @@ def test_invalid_transition_and_rerun(client, conn, users):
     conn.execute("update public.requests set status = 'researching' where id = %s", (rid,))
     conn.execute("update public.requests set status = 'research_failed' where id = %s", (rid,))
     assert client.post(f"/api/v1/staff/requests/{rid}/rerun", headers=as_(users["admin"])).status_code == 202
+    assert conn.execute("select status from public.requests where id = %s", (rid,)).fetchone()["status"] == "researching"
+    assert client.post(f"/api/v1/staff/requests/{rid}/rerun", headers=as_(users["admin"])).status_code == 409
     keys = [j["idempotency_key"] for j in conn.execute(
         "select idempotency_key from public.research_jobs where request_id = %s order by id", (rid,)).fetchall()]
     assert keys == [f"request:{rid}:research:1", f"request:{rid}:research:2"]
@@ -172,3 +123,63 @@ def test_security_headers(client):
     r = client.get("/api/v1/health")
     assert r.headers["content-security-policy"].startswith("default-src 'none'")
     assert r.headers["x-content-type-options"] == "nosniff"
+
+
+def test_staff_views_and_reviews(client, conn, users):
+    """herb/sources in the workspace, save-review rules, review repository, researcher list."""
+    rid = submit(client, users["b"]).json()["id"]
+    client.post(f"/api/v1/admin/requests/{rid}/assign", json={"researcher_id": str(users["res"])}, headers=as_(users["admin"]))
+    simulate_worker(conn, rid)
+    detail = client.get(f"/api/v1/staff/requests/{rid}", headers=as_(users["res"])).json()
+    assert detail["herb"]["name_en"] == "Ginger" and detail["sources"] == []
+    listed = next(x for x in client.get("/api/v1/staff/requests", headers=as_(users["admin"])).json() if x["id"] == rid)
+    assert listed["herb_name_he"] and "assigned_researcher_name" in listed
+
+    save = lambda who: client.post(f"/api/v1/staff/requests/{rid}/save-review", headers=as_(who))  # noqa: E731
+    assert save(users["res"]).status_code == 409                          # not published yet
+    client.post(f"/api/v1/staff/requests/{rid}/start-review", headers=as_(users["res"]))
+    assert client.post(f"/api/v1/staff/requests/{rid}/publish", json={"body": draft()},
+                       headers=as_(users["res"])).status_code == 204
+    assert save(users["admin"]).status_code == 403                        # admin doesn't approve content
+    first = save(users["res"]).json()
+    again = save(users["res"])
+    assert again.status_code == 409 and again.json()["error"]["code"] == "review_exists"   # one review per response
+
+    reviews = client.get("/api/v1/staff/reviews", headers=as_(users["res"])).json()
+    assert any(r["id"] == first["id"] and r["schema_version"] == "1" for r in reviews)
+    one = client.get(f"/api/v1/staff/reviews/{first['id']}", headers=as_(users["res"])).json()
+    assert "personal_context_he" not in one["content"] and one["content"]["appetite"] == draft()["appetite"]
+    assert client.get("/api/v1/staff/reviews", headers=as_(users["a"])).status_code == 403
+
+    researchers = client.get("/api/v1/admin/researchers", headers=as_(users["admin"])).json()
+    assert {str(users["res"]), str(users["res2"])} <= {r["id"] for r in researchers}
+    assert client.get("/api/v1/admin/researchers", headers=as_(users["res"])).status_code == 403
+
+
+def test_set_herb_and_draft_size(client, conn, users):
+    rid = submit(client, users["a"], herb="צמח מסתורי").json()["id"]
+    ginger = conn.execute("select id from public.herbs where name_en = 'Ginger'").fetchone()["id"]
+    assert client.patch(f"/api/v1/staff/requests/{rid}/herb", json={"herb_id": 999999999},
+                        headers=as_(users["admin"])).json()["error"]["code"] == "unknown_herb"
+    assert client.patch(f"/api/v1/staff/requests/{rid}/herb", json={"herb_id": ginger},
+                        headers=as_(users["admin"])).status_code == 204
+    simulate_worker(conn, rid)
+    client.post(f"/api/v1/staff/requests/{rid}/start-review", headers=as_(users["admin"]))
+    huge = client.put(f"/api/v1/staff/requests/{rid}/draft", json={"content": {"x": "א" * 150_000}},
+                      headers=as_(users["admin"]))
+    assert huge.status_code == 422 and huge.json()["error"]["code"] == "content_too_large"
+    assert client.patch(f"/api/v1/staff/requests/{rid}/herb", json={"herb_id": ginger},
+                        headers=as_(users["admin"])).status_code == 204     # still allowed in_review
+
+
+def test_publish_requires_acknowledging_flags(client, conn, users):
+    rid = submit(client, users["a"]).json()["id"]
+    client.post(f"/api/v1/admin/requests/{rid}/assign", json={"researcher_id": str(users["res"])}, headers=as_(users["admin"]))
+    simulate_worker(conn, rid)
+    client.post(f"/api/v1/staff/requests/{rid}/start-review", headers=as_(users["res"]))
+    body = draft()
+    body["appetite"]["summary_he"] = "מומלץ ליטול 500 מ״ג"
+    r = client.post(f"/api/v1/staff/requests/{rid}/publish", json={"body": body}, headers=as_(users["res"]))
+    assert r.status_code == 409 and r.json()["error"] == {"code": "content_flags", "message": "dose,recommendation"}
+    assert client.post(f"/api/v1/staff/requests/{rid}/publish", json={"body": body, "acknowledge_flags": True},
+                       headers=as_(users["res"])).status_code == 204

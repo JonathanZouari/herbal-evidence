@@ -1,0 +1,8 @@
+{"hitCount": 3, "resultList": {"result": [
+  {"id": "11111111", "source": "MED", "pmid": "11111111", "doi": "10.1000/abc.123",
+   "title": "Ginger for chemotherapy-related appetite loss: a randomized trial.", "pubYear": "2021",
+   "journalInfo": {"journal": {"title": "Supportive care in cancer"}}, "abstractText": "EPMC abstract"},
+  {"id": "PPR1", "source": "PPR", "doi": "10.2000/preprint.9", "title": "Ginger and quality of life in oncology",
+   "pubYear": "2024", "abstractText": "Preprint abstract."},
+  {"id": "X", "source": "MED", "title": "No identifiers at all"}
+]}}

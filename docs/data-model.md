@@ -19,10 +19,11 @@ Source of truth: `supabase/migrations/`. Dev project: `herbal-evidence-dev` (ref
 | `request_status_transitions` | allowed status changes (data, mirrored by backend) | none |
 | `request_events` | audit log of every status change, with actor | none |
 | `clarifications` | researcher question ↔ user answer | own requests (select; answers written via backend) |
-| `literature_sources` | PubMed / Europe PMC records | none |
-| `evidence_reviews` | reusable, versioned review per herb | none |
+| `literature_sources` | PubMed / Europe PMC records (deduped by pmid / doi / pmcid; DOIs stored lower-case) | none |
+| `evidence_reviews` | reusable, versioned review per herb (schema v1 content; `source_response_id` = the response it was saved from, unique) | none |
 | `review_sources` | review ↔ source links | none |
-| `response_drafts` | AI-assisted drafts; never shown to users | none |
+| `request_sources` | literature gathered for a request (`origin` pubmed / europepmc / review, `rank`, `job_id`) | none |
+| `response_drafts` | AI-assisted drafts; never shown to users. `job_id` (unique), `meta` = queries, counts, search errors, `ai_flags`, reused review | none |
 | `responses` | the approved, published response (one per request, `approved_by` required) | own request, only when published; `approved_by` hidden |
 | `research_jobs` | durable job queue (D-010) | none |
 
@@ -45,11 +46,13 @@ A trigger rejects any transition not in `request_status_transitions`, forces new
 
 ## Job queue
 
-Functions (service role only): `claim_job(worker, lease_seconds)`, `heartbeat_job(id, worker, lease_seconds)`, `complete_job(id, worker)`, `fail_job(id, worker, error, retryable)`.
+Functions (service role only): `claim_job(worker, lease_seconds, request_id default null)`, `heartbeat_job(id, worker, lease_seconds)`, `complete_job(id, worker)`, `fail_job(id, worker, error, retryable)`.
 
 - Claim uses `FOR UPDATE SKIP LOCKED`; also reclaims `running` jobs whose lease expired (crash recovery).
 - Failure: backoff `30s × 2^attempts` (max 1h) until `max_attempts` (default 5), then `dead`. `retryable = false` (e.g. AI provider not configured) → `dead` immediately.
 - `idempotency_key` is unique: enqueue with `on conflict (idempotency_key) do nothing`.
+- A job that becomes `dead` (via `fail_job` or claim-side exhaustion) moves its request `submitted | researching → research_failed`. Worker transitions have `actor_id = NULL` (= system) in `request_events`.
+- MOCK seed jobs (`payload.mock = true`) are never claimed; `request_id` scopes a claim to one request (used by tests on the shared dev DB).
 
 ## Seed and tests
 

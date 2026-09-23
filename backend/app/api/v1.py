@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from app.auth.jwt import Admin, Staff, User
 from app.db import get_conn
 from app.services import requests as svc
+from app.services import reviews
 
 router = APIRouter(prefix="/api/v1")
 Conn = Annotated[Connection, Depends(get_conn)]
@@ -35,8 +36,16 @@ class Content(BaseModel):
 
 
 class Publish(BaseModel):
-    body: dict
-    evidence_review_id: UUID | None = None
+    body: dict                       # validated against schema v1 in the service (content_invalid)
+    acknowledge_flags: bool = False  # researcher confirms flagged wording was reviewed (content_flags)
+
+
+class Rerun(BaseModel):
+    fresh: bool = False  # True: skip reusing an approved review, search the literature again
+
+
+class SetHerb(BaseModel):
+    herb_id: int = Field(gt=0)
 
 
 class Assign(BaseModel):
@@ -126,7 +135,7 @@ def ask(rid: UUID, body: Text, conn: Conn, user: Staff):
 
 @router.post("/staff/requests/{rid}/publish", status_code=204)
 def publish(rid: UUID, body: Publish, conn: Conn, user: Staff):
-    svc.publish(conn, user, rid, body.body, body.evidence_review_id)
+    svc.publish(conn, user, rid, body.body, body.acknowledge_flags)
 
 
 @router.post("/staff/requests/{rid}/close", status_code=204)
@@ -135,8 +144,28 @@ def close(rid: UUID, conn: Conn, user: Staff):
 
 
 @router.post("/staff/requests/{rid}/rerun", status_code=202)
-def rerun(rid: UUID, conn: Conn, user: Staff):
-    svc.rerun(conn, user, rid)
+def rerun(rid: UUID, conn: Conn, user: Staff, body: Rerun | None = None):
+    svc.rerun(conn, user, rid, bool(body and body.fresh))
+
+
+@router.patch("/staff/requests/{rid}/herb", status_code=204)
+def set_herb(rid: UUID, body: SetHerb, conn: Conn, user: Staff):
+    svc.set_herb(conn, user, rid, body.herb_id)
+
+
+@router.post("/staff/requests/{rid}/save-review", status_code=201)
+def save_review(rid: UUID, conn: Conn, user: Staff):
+    return reviews.save_review(conn, user, rid)
+
+
+@router.get("/staff/reviews")
+def list_reviews(conn: Conn, user: Staff, herb_id: int | None = None):
+    return reviews.list_reviews(conn, herb_id)
+
+
+@router.get("/staff/reviews/{review_id}")
+def get_review(review_id: UUID, conn: Conn, user: Staff):
+    return reviews.get_review(conn, review_id)
 
 
 # ------------------------------------------------------------------ admin
@@ -145,6 +174,11 @@ def rerun(rid: UUID, conn: Conn, user: Staff):
 @router.post("/admin/requests/{rid}/assign", status_code=204)
 def assign(rid: UUID, body: Assign, conn: Conn, admin: Admin):
     svc.assign(conn, admin, rid, body.researcher_id)
+
+
+@router.get("/admin/researchers")
+def researchers(conn: Conn, admin: Admin):
+    return reviews.list_researchers(conn)
 
 
 @router.get("/admin/users")

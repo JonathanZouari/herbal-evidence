@@ -1,10 +1,14 @@
 """Request lifecycle. Every action = one transaction: lock row -> authorize -> change -> (DB trigger audits) -> enqueue."""
 
+import json
 from uuid import UUID
 
 from psycopg import Connection
 from psycopg.types.json import Jsonb
+from pydantic import ValidationError
 
+from app.ai.guard import flag_content
+from app.ai.schema import DraftContent
 from app.auth.jwt import CurrentUser
 from app.db import tx
 from app.domain import herbs
@@ -12,6 +16,7 @@ from app.domain.status import RERUNNABLE, can_transition
 from app.errors import AppError, forbidden, not_found
 from app.settings import get_settings
 
+MAX_DRAFT_BYTES = 200_000
 # Columns a user may see (matches the column grants in the DB). Never status/assignment/drafts.
 PUBLIC_COLS = "id, herb_name_input, herb_id, preparation, cancer_type, treatment, public_status, created_at, updated_at"
 
@@ -23,7 +28,7 @@ def _transition(conn: Connection, req: dict, dst: str) -> None:
     req["status"] = dst
 
 
-def _enqueue_research(conn: Connection, request_id: UUID) -> None:
+def _enqueue_research(conn: Connection, request_id: UUID, fresh: bool = False) -> None:
     n = conn.execute(
         "select count(*) + 1 as n from public.research_jobs where request_id = %s and kind = 'research'",
         (request_id,),
@@ -31,7 +36,7 @@ def _enqueue_research(conn: Connection, request_id: UUID) -> None:
     conn.execute(
         """insert into public.research_jobs (kind, request_id, idempotency_key, payload)
            values ('research', %s, %s, %s) on conflict (idempotency_key) do nothing""",
-        (request_id, f"request:{request_id}:research:{n}", Jsonb({"request_id": str(request_id)})),
+        (request_id, f"request:{request_id}:research:{n}", Jsonb({"request_id": str(request_id), "fresh": fresh})),
     )
 
 
@@ -134,13 +139,25 @@ def _staff_locked(conn: Connection, user: CurrentUser, rid: UUID, researcher_onl
     return req
 
 
+def validate_content(content: dict) -> DraftContent:
+    """Publishable/reviewable content must match schema v1 (appetite first, cited sources, no scores)."""
+    try:
+        return DraftContent.model_validate(content)
+    except ValidationError as e:
+        first = e.errors()[0]
+        raise AppError(422, "content_invalid", f"{'.'.join(map(str, first['loc']))}: {first['msg']}") from None
+
+
 def staff_list(conn: Connection, user: CurrentUser, status: str | None) -> list[dict]:
     return conn.execute(
-        """select id, herb_name_input, herb_id, status, assigned_researcher_id, created_at, updated_at
-             from public.requests
-            where (%(admin)s or assigned_researcher_id = %(uid)s)
-              and (%(status)s::public.request_status is null or status = %(status)s::public.request_status)
-            order by created_at""",
+        """select r.id, r.herb_name_input, r.herb_id, h.name_he as herb_name_he, r.status,
+                  r.assigned_researcher_id, p.display_name as assigned_researcher_name, r.created_at, r.updated_at
+             from public.requests r
+             left join public.herbs h on h.id = r.herb_id
+             left join public.profiles p on p.id = r.assigned_researcher_id
+            where (%(admin)s or r.assigned_researcher_id = %(uid)s)
+              and (%(status)s::public.request_status is null or r.status = %(status)s::public.request_status)
+            order by r.created_at""",
         {"admin": user.role == "admin", "uid": user.id, "status": status},
     ).fetchall()
 
@@ -154,8 +171,14 @@ def staff_get(conn: Connection, user: CurrentUser, rid: UUID) -> dict:
         "events": "select from_status, to_status, actor_id, created_at from public.request_events where request_id = %s order by id",
         "jobs": "select id, kind, status, attempts, max_attempts, run_after, last_error, created_at from public.research_jobs where request_id = %s order by id",
         "response": "select * from public.responses where request_id = %s",
+        "sources": """select s.id, s.pmid, s.pmcid, s.doi, s.title, s.journal, s.pub_year, s.url, s.abstract,
+                             rs.origin, rs.rank
+                        from public.request_sources rs join public.literature_sources s on s.id = rs.source_id
+                       where rs.request_id = %s order by rs.job_id desc nulls last, rs.rank""",
     }.items():
         req[key] = conn.execute(sql, (rid,)).fetchall()
+    req["herb"] = conn.execute("select id, name_he, name_en, latin_name from public.herbs where id = %s",
+                               (req["herb_id"],)).fetchone() if req["herb_id"] else None
     return req
 
 
@@ -169,9 +192,12 @@ def save_draft(conn: Connection, user: CurrentUser, rid: UUID, content: dict) ->
         req = _staff_locked(conn, user, rid)
         if req["status"] != "in_review":
             raise AppError(409, "not_in_review")
+        if len(json.dumps(content, ensure_ascii=False).encode()) > MAX_DRAFT_BYTES:
+            raise AppError(422, "content_too_large")
         updated = conn.execute(
             """update public.response_drafts set content = %s, edited_by = %s, updated_at = now()
-                where id = (select id from public.response_drafts where request_id = %s order by created_at desc limit 1)
+                where id = (select id from public.response_drafts where request_id = %s
+                             order by created_at desc, job_id desc nulls last limit 1)
             returning id""",
             (Jsonb(content), user.id, rid),
         ).fetchone()
@@ -192,15 +218,27 @@ def ask_clarification(conn: Connection, user: CurrentUser, rid: UUID, question: 
         ).fetchone()["id"]
 
 
-def publish(conn: Connection, user: CurrentUser, rid: UUID, body: dict, evidence_review_id: UUID | None) -> None:
-    """One researcher approval per personalized response, even when reusing an approved review."""
+def publish(conn: Connection, user: CurrentUser, rid: UUID, body: dict, acknowledge_flags: bool = False) -> None:
+    """One researcher approval per personalized response, even when reusing an approved review.
+    The reused review id comes from the latest draft, never from the client. Wording that may break the product
+    rules (dose, recommendation, cure claim, score) must be explicitly acknowledged by the researcher."""
+    content = validate_content(body)
+    flags = flag_content(content)
+    if flags and not acknowledge_flags:
+        raise AppError(409, "content_flags", ",".join(flags))
     with tx(conn, user.id):
         req = _staff_locked(conn, user, rid, researcher_only=True)
         _transition(conn, req, "published")
+        draft = conn.execute(
+            """select evidence_review_id from public.response_drafts where request_id = %s
+                order by created_at desc, job_id desc nulls last limit 1""",
+            (rid,),
+        ).fetchone()
+        evidence_review_id = draft["evidence_review_id"] if draft else None
         conn.execute(
             """insert into public.responses (request_id, evidence_review_id, body, approved_by)
                values (%s, %s, %s, %s)""",
-            (rid, evidence_review_id, Jsonb(body), user.id),
+            (rid, evidence_review_id, Jsonb(content.model_dump(mode="json")), user.id),
         )
 
 
@@ -209,12 +247,34 @@ def close(conn: Connection, user: CurrentUser, rid: UUID) -> None:
         _transition(conn, _staff_locked(conn, user, rid), "closed")
 
 
-def rerun(conn: Connection, user: CurrentUser, rid: UUID) -> None:
+def rerun(conn: Connection, user: CurrentUser, rid: UUID, fresh: bool = False) -> None:
+    """fresh=True skips reusing an approved review and searches the literature again."""
     with tx(conn, user.id):
         req = _staff_locked(conn, user, rid)
         if req["status"] not in RERUNNABLE:
             raise AppError(409, "invalid_transition", f"cannot rerun from {req['status']}")
-        _enqueue_research(conn, rid)
+        pending = conn.execute(
+            "select 1 from public.research_jobs where request_id = %s and status in ('queued', 'running')", (rid,)
+        ).fetchone()
+        if pending:
+            raise AppError(409, "job_pending")
+        # the request leaves in_review/research_failed now, so a late job can never take over a review in progress
+        _transition(conn, req, "researching")
+        _enqueue_research(conn, rid, fresh)
+
+
+HERB_EDITABLE = {"submitted", "research_failed", "in_review"}
+
+
+def set_herb(conn: Connection, user: CurrentUser, rid: UUID, herb_id: int) -> None:
+    """Staff resolve an unidentified herb (then rerun)."""
+    with tx(conn, user.id):
+        req = _staff_locked(conn, user, rid)
+        if req["status"] not in HERB_EDITABLE:
+            raise AppError(409, "invalid_transition", f"cannot change herb in {req['status']}")
+        if not conn.execute("select 1 from public.herbs where id = %s", (herb_id,)).fetchone():
+            raise AppError(422, "unknown_herb")
+        conn.execute("update public.requests set herb_id = %s where id = %s", (herb_id, rid))
 
 
 # ------------------------------------------------------------------ admin

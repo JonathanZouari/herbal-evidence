@@ -4,6 +4,7 @@ version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.141.1",
+    "httpx>=0.28.1",
     "psycopg[binary,pool]>=3.3.6",
     "pydantic-settings>=2.15.0",
     "pyjwt[crypto]>=2.14.0",
@@ -20,6 +21,5 @@ filterwarnings = ["ignore:Using `httpx`:DeprecationWarning", "ignore:The anyio.a
 
 [dependency-groups]
 dev = [
-    "httpx>=0.28.1",
     "pytest>=9.1.1",
 ]

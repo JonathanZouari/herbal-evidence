@@ -1,6 +1,6 @@
 # Mirror of public.request_status_transitions (tests assert they are equal). The DB trigger is the final guard.
 TRANSITIONS: dict[str, set[str]] = {
-    "submitted": {"researching", "withdrawn", "closed"},
+    "submitted": {"researching", "research_failed", "withdrawn", "closed"},
     "researching": {"draft_ready", "research_failed", "withdrawn"},
     "research_failed": {"researching", "withdrawn", "closed"},
     "draft_ready": {"in_review", "withdrawn", "closed"},
@@ -11,7 +11,7 @@ TRANSITIONS: dict[str, set[str]] = {
     "closed": set(),
 }
 
-# States from which staff may re-run research (the worker moves the request to `researching` on claim).
+# States from which staff may re-run research (rerun moves the request to `researching` and enqueues a job).
 RERUNNABLE = {"research_failed", "in_review"}
 
 
