@@ -95,6 +95,9 @@ def test_invalid_transition_and_rerun(client, conn, users):
     assert client.post(f"/api/v1/staff/requests/{rid}/rerun", headers=as_(users["admin"])).status_code == 409
     conn.execute("update public.requests set status = 'researching' where id = %s", (rid,))
     conn.execute("update public.requests set status = 'research_failed' where id = %s", (rid,))
+    r = client.post(f"/api/v1/staff/requests/{rid}/rerun", headers=as_(users["admin"]))
+    assert r.status_code == 409 and r.json()["error"]["code"] == "job_pending"   # its job is still queued
+    conn.execute("update public.research_jobs set status = 'dead' where request_id = %s", (rid,))   # as a real failure leaves it
     assert client.post(f"/api/v1/staff/requests/{rid}/rerun", headers=as_(users["admin"])).status_code == 202
     assert conn.execute("select status from public.requests where id = %s", (rid,)).fetchone()["status"] == "researching"
     assert client.post(f"/api/v1/staff/requests/{rid}/rerun", headers=as_(users["admin"])).status_code == 409
