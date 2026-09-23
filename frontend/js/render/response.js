@@ -3,6 +3,7 @@
 
 import { bdi, extLink, h } from "../dom.js";
 import { EVIDENCE_BASE, OUTCOMES, STUDY_TYPES } from "../i18n.js";
+import { toast } from "../layout.js";
 
 export function isSchemaV1(content) {
   return Boolean(content && content.schema_version === "1" && content.appetite && Array.isArray(content.sources));
@@ -35,11 +36,24 @@ function bullets(title, items, emptyText) {
     items?.length ? h("ul", {}, items.map((t) => h("li", {}, t))) : h("p", { class: "muted" }, emptyText));
 }
 
+async function copyCitation(s) {
+  const text = [s.title, [s.journal, s.year].filter(Boolean).join(", "), s.ref, s.url].filter(Boolean).join(". ");
+  try {
+    await navigator.clipboard.writeText(text);
+    toast("הציטוט הועתק.");
+  } catch {
+    toast("לא ניתן היה להעתיק את הציטוט.");
+  }
+}
+
 export function sourceList(sources) {
   if (!sources?.length) return h("p", { class: "muted" }, "לא צוטטו מקורות.");
   return h("ol", { class: "sources" }, sources.map((s, i) => h("li", { id: `src-${i + 1}` },
     s.url ? extLink(s.url, s.title) : bdi(s.title),
-    h("span", { class: "muted small" }, " · ", bdi([s.journal, s.year].filter(Boolean).join(", ")), " · ", bdi(s.ref)))));
+    h("span", { class: "muted small" }, " · ", bdi([s.journal, s.year].filter(Boolean).join(", ")), " · ", bdi(s.ref)),
+    " ",
+    h("button", { class: "btn secondary small no-print", type: "button", "aria-label": `העתקת ציטוט למקור ${i + 1}`,
+      onclick: () => copyCitation(s) }, "העתק ציטוט"))));
 }
 
 /** Render content; `personal` = include the personal-context and consult sections (responses and drafts). */
