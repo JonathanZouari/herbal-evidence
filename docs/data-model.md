@@ -14,7 +14,7 @@ Source of truth: `supabase/migrations/`. Dev project: `herbal-evidence-dev` (ref
 | Table | Purpose | Client access |
 |-------|---------|---------------|
 | `profiles` | role + display name per auth user | own row (select) |
-| `herbs` | reference herbs + `aliases` for herb identification | anon + authenticated (select) |
+| `herbs` | reference herbs + `aliases` for herb identification; `origin_regions` / `traditions` (fixed value sets) + `history_he`: background only, never evidence | anon + authenticated (select) |
 | `requests` | the user's claim: herb (required), preparation / cancer type / treatment (NULL = "I don't know") | own rows, **selected columns only** (no `status`, no `assigned_researcher_id`) |
 | `request_status_transitions` | allowed status changes (data, mirrored by backend) | none |
 | `request_events` | audit log of every status change, with actor | none |
