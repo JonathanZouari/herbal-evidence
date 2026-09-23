@@ -3,14 +3,28 @@
 -- Mock users have NO password: they cannot log in (repo is public). Create real test logins via the Auth admin API.
 -- Idempotent: skipped when the mock users already exist.
 
-insert into public.herbs (name_he, name_en, latin_name, aliases) values
-  ('ג׳ינג׳ר',   'Ginger',    'Zingiber officinale',         '{ginger,ג''ינג''ר,גינגר,זנגביל}'),
-  ('ג׳ינסנג',   'Ginseng',   'Panax ginseng',               '{ginseng,ג''ינסנג,גינסנג}'),
-  ('כורכום',    'Turmeric',  'Curcuma longa',               '{turmeric,curcumin,כורכום,כורכומין}'),
-  ('חילבה',     'Fenugreek', 'Trigonella foenum-graecum',   '{fenugreek,חילבה,תלתן}'),
-  ('אסטרגלוס',  'Astragalus','Astragalus membranaceus',     '{astragalus,אסטרגלוס,קדד}'),
-  ('קנאביס',    'Cannabis',  'Cannabis sativa',             '{cannabis,marijuana,קנאביס,קנביס}')
-on conflict (name_en) do nothing;
+insert into public.herbs (name_he, name_en, latin_name, aliases, origin_regions, traditions, history_he) values
+  ('ג׳ינג׳ר',   'Ginger',    'Zingiber officinale',         '{ginger,ג''ינג''ר,גינגר,זנגביל}',
+   '{southeast_asia}', '{tcm,ayurveda}',
+   'מקורו בדרום-מזרח אסיה, שם הוא מגודל אלפי שנים. הגיע לאגן הים התיכון דרך סחר התבלינים בעת העתיקה, ומשמש ברפואה הסינית ובאיורוודה.'),
+  ('ג׳ינסנג',   'Ginseng',   'Panax ginseng',               '{ginseng,ג''ינסנג,גינסנג}',
+   '{east_asia}', '{tcm,korean}',
+   'גדל בר ביערות קוריאה, צפון-מזרח סין והמזרח הרחוק הרוסי. תופס מקום מרכזי ברפואה הסינית והקוריאנית המסורתית, וכיום מגודל בעיקר בחוות בקוריאה ובסין.'),
+  ('כורכום',    'Turmeric',  'Curcuma longa',               '{turmeric,curcumin,כורכום,כורכומין}',
+   '{south_asia,southeast_asia}', '{ayurveda,tcm}',
+   'מקורו בתת-היבשת ההודית ובדרום-מזרח אסיה. משמש אלפי שנים במטבח ההודי, באיורוודה וברפואה הסינית, וגם כצבע טבעי.'),
+  ('חילבה',     'Fenugreek', 'Trigonella foenum-graecum',   '{fenugreek,חילבה,תלתן}',
+   '{middle_east,mediterranean}', '{middle_eastern_folk,unani,ayurveda}',
+   'מקורה במזרח התיכון ובאגן הים התיכון, וזרעיה נמצאו באתרים ארכאולוגיים עתיקים באזור. משמשת ברפואה העממית של המזרח התיכון, ברפואת היונאני ובאיורוודה, וגם במטבח התימני.'),
+  ('אסטרגלוס',  'Astragalus','Astragalus membranaceus',     '{astragalus,אסטרגלוס,קדד}',
+   '{east_asia}', '{tcm}',
+   'גדל בצפון סין, במונגוליה ובקוריאה. שורשו (הואנג צ׳י) הוא מהצמחים הנפוצים ביותר ברפואה הסינית המסורתית.'),
+  ('קנאביס',    'Cannabis',  'Cannabis sativa',             '{cannabis,marijuana,קנאביס,קנביס}',
+   '{central_asia,east_asia}', '{tcm,ayurveda}',
+   'מקורו במרכז או במזרח אסיה (הדעות חלוקות). משמש אלפי שנים לסיבים, למזון ולמטרות רפואיות, ומוזכר בטקסטים של הרפואה הסינית והאיורוודה.')
+-- origins are reference data too: re-running the seed refreshes them on existing herbs
+on conflict (name_en) do update
+  set origin_regions = excluded.origin_regions, traditions = excluded.traditions, history_he = excluded.history_he;
 
 do $$
 declare
