@@ -1,7 +1,7 @@
 // New request: herb (list + free text) and three optional fields, each with an explicit "I don't know".
 
 import { get, post } from "../api.js";
-import { clear, h } from "../dom.js";
+import { charCounter, clear, h } from "../dom.js";
 import { errorMessage } from "../i18n.js";
 import { main, requireAuth } from "../layout.js";
 
@@ -25,7 +25,11 @@ const herbError = h("span", { id: "herb-error", class: "error-text" });
 function optionalField({ name, label, hint, max }) {
   const input = h("textarea", { id: name, name, rows: 2, maxlength: max, "aria-describedby": `${name}-hint` });
   const unknown = h("input", { type: "checkbox", id: `${name}-unknown`, checked: true });
-  const sync = () => { input.disabled = unknown.checked; if (unknown.checked) input.value = ""; };
+  const counter = charCounter(input);
+  const sync = () => {
+    input.disabled = unknown.checked;
+    if (unknown.checked) { input.value = ""; input.dispatchEvent(new Event("input")); }
+  };
   unknown.addEventListener("change", () => { sync(); if (!unknown.checked) input.focus(); });
   sync();
   return {
@@ -35,7 +39,7 @@ function optionalField({ name, label, hint, max }) {
       h("label", { class: "check", for: `${name}-unknown` }, unknown, "לא ידוע / מעדיף/ה לא לציין"),
       h("span", { class: "hint", id: `${name}-hint` }, hint),
       h("label", { class: "sr-only", for: name }, label),
-      input),
+      input, counter),
   };
 }
 
