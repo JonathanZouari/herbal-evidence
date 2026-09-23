@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     ai_provider: Literal["openai", "none"] = "none"
     ai_model: str = ""
     ai_api_key: SecretStr | None = None
-    ai_timeout_seconds: float = 90
+    ai_timeout_seconds: float = 180   # a strong model on ~20 abstracts takes ~80s
     # literature (D-009)
     ncbi_api_key: SecretStr | None = None
     ncbi_tool: str = "herbal-evidence"

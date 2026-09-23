@@ -1,7 +1,7 @@
 // A user's request: status in words, clarification answers, the approved response, withdraw.
 
 import { get, post } from "../api.js";
-import { bdi, clear, extLink, formatDate, h, param } from "../dom.js";
+import { bdi, charCounter, clear, extLink, formatDate, h, param } from "../dom.js";
 import { errorMessage, publicStatus } from "../i18n.js";
 import { confirmDialog, main, requireAuth, showError, toast } from "../layout.js";
 import { renderContent } from "../render/response.js";
@@ -41,7 +41,7 @@ function clarifications(r) {
       const form = h("form", {},
         h("div", { class: "field" },
           h("label", { for: ta.id }, bdi(c.question)),
-          h("span", { class: "hint" }, `נשאל ב-${formatDate(c.asked_at)}`), ta, err),
+          h("span", { class: "hint" }, `נשאל ב-${formatDate(c.asked_at)}`), ta, charCounter(ta), err),
         h("button", { class: "btn", type: "submit" }, "שליחת תשובה"));
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
