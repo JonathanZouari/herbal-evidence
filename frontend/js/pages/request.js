@@ -76,7 +76,9 @@ async function load() {
     r.response ? h("article", { class: "card stack", "aria-labelledby": "resp-title" },
       h("h2", { id: "resp-title" }, "התשובה לבקשה שלך"),
       h("p", { class: "badge done", "data-icon": "✔" }, "נבדקה ואושרה על ידי חוקר/ת"),
-      h("p", { class: "muted small" }, `פורסמה ב-${formatDate(r.response.published_at)}`),
+      h("div", { class: "row spread" },
+        h("p", { class: "muted small" }, `פורסמה ב-${formatDate(r.response.published_at)}`),
+        h("button", { class: "btn secondary small no-print", type: "button", onclick: () => window.print() }, "הדפסת התשובה")),
       renderContent(r.response.body)) : null,
     canWithdraw ? h("p", {}, h("button", { class: "btn danger", type: "button", onclick: withdraw }, "ביטול הבקשה")) : null);
 }
