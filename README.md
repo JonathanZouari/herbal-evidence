@@ -25,9 +25,9 @@ Details and setup steps: see `docs/deployment.md`. Development status per phase 
 ## Local development (filled in as phases complete)
 
 1. Database: cloud dev project, no Docker (D-014). `supabase link --project-ref vtcmicxlujahurhetcaa`, then `supabase db push --linked`; tests: `supabase db query --linked -f supabase/tests/permissions.sql`. See `docs/data-model.md`.
-2. `cd backend && uv sync && uv run uvicorn app.main:app --reload` (Phase 2)
+2. Backend: `cd backend && uv sync && uv run pytest -q && uv run uvicorn app.main:app --reload` (needs `backend/.env`, see `.env.example`). See `docs/architecture.md`.
 3. `cd frontend && npx serve .` (Phase 4)
 
 ## Status
 
-Phase 1 (database) — done, pending review. See `docs/decisions.md` for engineering choices.
+Phase 2 (backend core) — done, pending review. See `docs/decisions.md` for engineering choices.
