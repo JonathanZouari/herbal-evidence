@@ -38,8 +38,10 @@ All screens are DESKTOP, 2560px wide. Prefix: `projects/12444680124780591192/scr
 
 Still not generated: approved response view, researcher queue, review/editor workspace, review repository, staff management.
 
-## Spec deviations to fix (Phase 4)
+**Phase 4 (2026-09-23):** one more generation was requested (approved response view, `GEMINI_3_5_FLASH_LITE`). It timed out client-side and had not appeared in `list_screens` about 25 minutes later. Per the agreed fallback, the five missing screens were **built by hand** from the design tokens (`frontend/css/tokens.css`) and the patterns of the existing screens. Stitch HTML is used as visual reference only; its Tailwind CDN markup is not allowed by the frontend CSP.
 
-1. **ETA shown** — dashboard shows "זמן מענה משוער: 3-5 ימי עבודה"; form v1 shows "הבקשה תיבדק תוך 3 ימי עסקים". Spec forbids showing an ETA.
-2. **Inconsistent branding** — form v1 uses "Herbal Evidence" in Latin script; other screens use "ראיות צמחים" / "סקירת ראיות — צמחי מרפא".
-3. **Approval count** — dashboard says "הסקירה אושרה ע״י שני חוקרים"; spec requires one researcher approval.
+## Spec deviations (fixed in the Phase 4 code)
+
+1. **ETA shown** — dashboard shows "זמן מענה משוער: 3-5 ימי עבודה"; form v1 shows "הבקשה תיבדק תוך 3 ימי עסקים". Spec forbids showing an ETA. → **Fixed:** no ETA or queue position anywhere; status is shown in words plus an icon.
+2. **Inconsistent branding** — form v1 uses "Herbal Evidence" in Latin script; other screens use "ראיות צמחים" / "סקירת ראיות — צמחי מרפא". → **Fixed:** the only brand is "ראיות צמחים" (`i18n.js` BRAND).
+3. **Approval count** — dashboard says "הסקירה אושרה ע״י שני חוקרים"; spec requires one researcher approval. → **Fixed:** "נבדקה ואושרה על ידי חוקר/ת"; only the assigned researcher can publish.

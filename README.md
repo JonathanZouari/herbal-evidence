@@ -26,8 +26,8 @@ Details and setup steps: see `docs/deployment.md`. Development status per phase 
 
 1. Database: cloud dev project, no Docker (D-014). `supabase link --project-ref vtcmicxlujahurhetcaa`, then `supabase db push --linked`; tests: `supabase db query --linked -f supabase/tests/permissions.sql`. See `docs/data-model.md`.
 2. Backend: `cd backend && uv sync && uv run pytest -q && uv run uvicorn app.main:app --reload` (needs `backend/.env`, see `.env.example`). See `docs/architecture.md`.
-3. `cd frontend && npx serve .` (Phase 4)
+3. Frontend: copy `frontend/.env.example` to `frontend/.env` (public values only), then `python frontend/dev_server.py` → http://localhost:8080. Same CSP/headers as the Caddy container; `js/config.js` is generated from `.env`. Start the backend with `WORKER_ENABLED=true` to process research jobs. See `frontend/README.md`.
 
 ## Status
 
-Phase 2 (backend core) — done, pending review. See `docs/decisions.md` for engineering choices.
+Phases 3 (research worker + AI) and 4 (Hebrew RTL frontend) — done, pending review. See `docs/decisions.md` for engineering choices.

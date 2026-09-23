@@ -66,6 +66,27 @@ The pool runs in autocommit, so `tx()` is the only transaction boundary and no c
 ### Security headers
 `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`, `nosniff`, `Referrer-Policy: no-referrer`, `Cache-Control: no-store`, plus HSTS in production. CORS allows only the exact origins in `CORS_ALLOWED_ORIGINS`.
 
+## Frontend (`frontend/`, Phase 4)
+
+Plain HTML + CSS + ES modules, no build step (D-003), Hebrew RTL (`<html lang="he" dir="rtl">`).
+
+| Page | Who | Purpose |
+|------|-----|---------|
+| `index.html` | public | what the service does and does not do |
+| `auth.html?mode=login\|signup\|reset\|update\|verified` | public | Supabase Auth (PKCE); messages never reveal whether an email exists |
+| `requests.html`, `new.html`, `request.html?id=` | user | my requests, new request (herb list + free text, "לא ידוע" per optional field), detail with clarification answers, the approved response, withdraw |
+| `staff.html`, `staff-request.html?id=` | researcher / admin | queue (admins assign), workspace: job error, herb fix, sources, structured draft editor, clarification, rerun, publish (assigned researcher only), save as reusable review |
+| `reviews.html[?id=]` | researcher / admin | repository of reusable reviews |
+| `admin.html` | admin | users and roles |
+
+- `js/dom.js` builds DOM with `createElement`/`textContent` only (no `innerHTML`); links only for http(s) URLs; user text, Latin names, PMIDs and DOIs are wrapped in `<bdi>`.
+- `js/i18n.js` maps every backend error code, public/internal status, job error code, study type and outcome to Hebrew.
+- `js/render/response.js` renders schema-v1 content (appetite first, secondary outcomes separately, evidence base in words); `js/render/editor.js` edits it, with citations restricted to the request's gathered sources.
+- Runtime config `js/config.js` (`API_BASE_URL`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `APP_ENV`, all public) is written at container start by `docker-entrypoint.sh` (validated) or served by `dev_server.py` locally.
+- `supabase-js` 2.117.0 UMD and Noto Sans Hebrew are vendored (`js/vendor/`, `fonts/`); versions and hashes are in `frontend/README.md`.
+- Serving: Caddy (`frontend/Caddyfile`, `frontend/Dockerfile`). CSP `default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' <API> <Supabase>; frame-ancestors 'none'`, plus nosniff, no-referrer, Permissions-Policy and HSTS. No inline scripts or styles.
+- a11y: skip link, labelled fields, error summary that takes focus, `aria-live` announcements, `<dialog>` confirmations, 44px targets, status shown as icon + text (never colour alone), `prefers-reduced-motion`.
+
 ## Running locally
 ```
 cd backend
