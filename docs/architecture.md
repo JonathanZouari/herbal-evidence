@@ -73,6 +73,7 @@ Plain HTML + CSS + ES modules, no build step (D-003), Hebrew RTL (`<html lang="h
 | Page | Who | Purpose |
 |------|-----|---------|
 | `index.html` | public | what the service does and does not do |
+| `evidence.html[?s=]` | public | evidence map by symptom: studied herbs with evidence level, and known cautions (static demo data in `js/evidence-demo.js`, no API) |
 | `auth.html?mode=login\|signup\|reset\|update\|verified` | public | Supabase Auth (PKCE); messages never reveal whether an email exists |
 | `requests.html`, `new.html`, `request.html?id=` | user | my requests, new request (herb list + free text, "לא ידוע" per optional field), detail with clarification answers, the approved response, withdraw |
 | `staff.html`, `staff-request.html?id=` | researcher / admin | queue (admins assign), workspace: job error, herb fix, sources, structured draft editor, clarification, rerun, publish (assigned researcher only), save as reusable review |

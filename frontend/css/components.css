@@ -97,3 +97,16 @@ details > summary { cursor: pointer; font-weight: 600; }
 
 ul[role="list"] { list-style: none; padding: 0; }
 .card.narrow { max-width: 520px; margin-inline: auto; }
+
+/* ---------------------------------------------------------------- evidence map (evidence.html) */
+.grow { flex: 1; min-width: 200px; }
+.grid-halves { display: grid; gap: var(--space-4); grid-template-columns: 1fr 1fr; }
+@media (max-width: 860px) { .grid-halves { grid-template-columns: 1fr; } }
+.card.caution { border-color: #e6d3a8; background: var(--warning-soft); }
+.card.caution .finding { border-top-color: #e6d3a8; }
+.finding h4 { margin: 0; font-size: 1rem; }
+.finding h4 .muted { font-weight: 400; }
+.results { margin-top: var(--space-5); }
+.btn.secondary[aria-pressed="true"] { background: var(--primary-soft); border-width: 2px; }
+.levels { display: grid; grid-template-columns: max-content 1fr; gap: var(--space-2) var(--space-3); margin: var(--space-3) 0 0; }
+.levels dd { margin: 0; }
