@@ -33,3 +33,6 @@ supabase/.env
 Thumbs.db
 .vscode/
 .idea/
+
+# frontend runtime config (generated at container start / by dev_server.py)
+frontend/js/config.js
