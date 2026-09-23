@@ -17,7 +17,7 @@ The platform does **not** recommend which herb to take, does not prescribe doses
 
 | Env | Git branch | Railway env | Supabase project |
 |-----|-----------|-------------|------------------|
-| dev | `dev` | `dev` | `herbal-evidence-dev` |
+| staging | `dev` | `staging` | `herbal-evidence-dev` |
 | production | `main` | `production` | `herbal-evidence-prod` |
 
 Details and setup steps: see `docs/deployment.md`. Development status per phase is tracked in the project's Obsidian vault (`HERBAL_EVIDENCE_PROJECT/`).
