@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     max_requests_per_day: int = 5
     max_open_requests: int = 3
     ip_requests_per_minute: int = 120
+    photo_identify_per_hour: int = 20   # D-021, per user, in memory
     # research worker (D-010, D-019): off unless explicitly enabled; tests never start it
     worker_enabled: bool = False
     worker_poll_seconds: float = 5

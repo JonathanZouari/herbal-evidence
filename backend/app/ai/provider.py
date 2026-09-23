@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Protocol
 
-from app.ai.schema import Analysis
+from app.ai.schema import Analysis, HerbGuess
 from app.research.http import SafeClient
 from app.research.sources import Source
 from app.settings import Settings
@@ -33,11 +33,16 @@ class AIProvider(Protocol):
 
     def generate(self, inp: DraftInput) -> Analysis: ...
 
+    def identify_herb(self, image_data_url: str, herbs: list[dict]) -> HerbGuess: ...
+
 
 class NullProvider:
     name, model = "none", ""
 
     def generate(self, inp: DraftInput) -> Analysis:
+        raise ProviderNotConfigured()
+
+    def identify_herb(self, image_data_url: str, herbs: list[dict]) -> HerbGuess:
         raise ProviderNotConfigured()
 
 

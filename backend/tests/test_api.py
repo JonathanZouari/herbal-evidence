@@ -186,3 +186,27 @@ def test_publish_requires_acknowledging_flags(client, conn, users):
     assert r.status_code == 409 and r.json()["error"] == {"code": "content_flags", "message": "dose,recommendation"}
     assert client.post(f"/api/v1/staff/requests/{rid}/publish", json={"body": body, "acknowledge_flags": True},
                        headers=as_(users["res"])).status_code == 204
+
+
+def test_identify_herb_photo(client, conn, users, monkeypatch):
+    from app.ai.provider import NullProvider
+    from app.services import photo
+    from tests.test_photo import JPEG, guess
+
+    ginger = conn.execute("select id from public.herbs where name_en = 'Ginger'").fetchone()["id"]
+
+    class Fake:
+        def identify_herb(self, image, herbs):
+            assert any(h["id"] == ginger for h in herbs)
+            return guess(match=str(ginger))
+    monkeypatch.setattr(photo, "_provider", lambda: Fake())
+    monkeypatch.setattr(photo, "_quota", photo.HourlyQuota())
+    url = "/api/v1/herbs/identify"
+    assert client.post(url, json={"image": JPEG}).status_code == 422          # no test identity header
+    r = client.post(url, json={"image": JPEG}, headers=as_(users["a"]))
+    assert r.status_code == 200 and r.json()["herb_id"] == ginger and r.json()["in_list"] is True
+    r = client.post(url, json={"image": "data:image/gif;base64,AAAA"}, headers=as_(users["a"]))
+    assert r.json()["error"]["code"] == "image_invalid"
+    monkeypatch.setattr(photo, "_provider", lambda: NullProvider())
+    r = client.post(url, json={"image": JPEG}, headers=as_(users["a"]))
+    assert r.status_code == 503 and r.json()["error"]["code"] == "ai_not_configured"

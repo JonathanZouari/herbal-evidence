@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from app.auth.jwt import Admin, Staff, User
 from app.db import get_conn
 from app.services import requests as svc
-from app.services import reviews
+from app.services import photo, reviews
 
 router = APIRouter(prefix="/api/v1")
 Conn = Annotated[Connection, Depends(get_conn)]
@@ -38,6 +38,10 @@ class Content(BaseModel):
 class Publish(BaseModel):
     body: dict                       # validated against schema v1 in the service (content_invalid)
     acknowledge_flags: bool = False  # researcher confirms flagged wording was reviewed (content_flags)
+
+
+class Photo(BaseModel):
+    image: str = Field(max_length=2_800_000)   # data URL; decoded size is checked in the service (2 MB)
 
 
 class Rerun(BaseModel):
@@ -75,6 +79,12 @@ def me(conn: Conn, user: User):
 @router.get("/herbs")
 def herbs(conn: Conn):
     return conn.execute("select id, name_he, name_en, latin_name from public.herbs order by name_he").fetchall()
+
+
+@router.post("/herbs/identify")
+def identify_herb(body: Photo, conn: Conn, user: User):
+    """Most likely herb in a photo, to pre-fill the request form. The photo is not stored (D-021)."""
+    return photo.identify(conn, user, body.image)
 
 
 # ------------------------------------------------------------------ user

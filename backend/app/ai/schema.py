@@ -149,6 +149,21 @@ def _strictify(node):
     return out
 
 
+class HerbGuess(Strict):
+    """What the AI returns for a herb photo. Names shown to the user come from `herbs` when `match` is a listed id."""
+    is_plant: bool
+    match: str                       # a listed herb id, or "none"
+    latin_name: str | None = Field(max_length=200)
+    name_he: str | None = Field(max_length=200)
+    certainty: Literal["high", "medium", "low"]   # a category, never a number
+
+
+def herb_guess_json_schema(ids: list[str]) -> dict:
+    schema = _strictify(HerbGuess.model_json_schema())
+    schema["properties"]["match"] = {"type": "string", "enum": [*ids, "none"]}
+    return schema
+
+
 def analysis_json_schema(refs: list[str]) -> dict:
     """Strict-mode schema (every key required, no extra keys); source_ref limited to the gathered refs.
     Length limits are enforced by Pydantic after the call, not by the provider."""

@@ -97,3 +97,4 @@ details > summary { cursor: pointer; font-weight: 600; }
 
 ul[role="list"] { list-style: none; padding: 0; }
 .card.narrow { max-width: 520px; margin-inline: auto; }
+.photo-preview { display: block; max-width: 160px; max-height: 160px; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--border); margin-top: var(--space-2); }

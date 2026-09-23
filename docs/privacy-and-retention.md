@@ -8,6 +8,7 @@ _Full document in Phase 6. Recorded here as soon as a phase creates a data flow.
 |------|--------------|-----|-------|
 | PubMed (NCBI E-utilities), Europe PMC | herb English/Latin names + fixed outcome/cancer terms | literature search | no user data; never the Hebrew free text |
 | AI provider (OpenAI, only when `AI_API_KEY` is set) | herb names, abstracts of found studies, and the request's **optional free-text fields**: preparation, cancer type, treatment (`"לא ידוע"` when not given) | personal-context paragraph of the draft | `store: false`; no name, email, user id or request id is sent. **Open decision for the product owner:** whether these free-text fields may go to the AI provider at all, or should be omitted (the draft then has no personal-context paragraph). |
+| AI provider (OpenAI, only when `AI_API_KEY` is set) — herb photo (D-021) | one photo the user chose to take/upload, resized in the browser to ≤1024px JPEG without EXIF/GPS, plus the list of reference herbs | pre-fill the herb name on the request form | `store: false`; no user id, name or email. **Not stored** anywhere on our side (DB, Storage, logs); discarded after the response. |
 
 ## Not collected
 No medical profile, ID number or medical records (spec). Users are asked only for the herb and three optional fields.
