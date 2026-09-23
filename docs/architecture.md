@@ -32,11 +32,11 @@ backend (FastAPI, /api/v1)  ──── direct Postgres (session pooler, psycop
 - `admin`: everything else (all requests, assigning, roles), but can't approve a response and can't change their own role.
 
 ### API (`/api/v1`)
-- Public: `GET /health`, `GET /herbs`. Signed in: `GET /me`.
+- Public: `GET /health`, `GET /herbs`. Signed in: `GET /me`, `POST /herbs/identify` `{image: data URL}` → most likely herb `{herb_id|null, name_he, name_en, latin_name, certainty, in_list}` (D-021; photo not stored).
 - User: `POST/GET /requests`, `GET /requests/{id}`, `POST /requests/{id}/withdraw`, `POST /requests/{id}/clarifications/{cid}/answer`.
 - Staff: `GET /staff/requests[?status=]`, `GET /staff/requests/{id}` (incl. `herb`, `sources`, `drafts`, `jobs`, `events`), `POST …/start-review`, `PUT …/draft`, `POST …/clarifications`, `POST …/publish` (body must match schema v1), `POST …/close`, `POST …/rerun` `{fresh?}`, `PATCH …/herb` `{herb_id}`, `POST …/save-review`, `GET /staff/reviews[?herb_id=]`, `GET /staff/reviews/{id}`.
 - Admin: `POST /admin/requests/{id}/assign`, `GET /admin/researchers`, `GET /admin/users`, `PATCH /admin/users/{id}/role`.
-- Errors: `{"error": {"code", "message"}}`. Codes: `missing_token`, `invalid_token`, `forbidden`, `not_found`, `invalid_transition` (409), `quota_daily` / `quota_open` / `rate_limited` (429), `validation_error` / `content_invalid` / `content_too_large` / `unknown_herb` (422), `not_published` / `herb_required` / `review_exists` / `job_pending` / `content_flags` (409), and others. `content_flags`: the published body contains wording flagged as dose / recommendation / cure claim / score; the researcher must re-submit with `acknowledge_flags: true`. The frontend maps codes to Hebrew.
+- Errors: `{"error": {"code", "message"}}`. Codes: `missing_token`, `invalid_token`, `forbidden`, `not_found`, `invalid_transition` (409), `quota_daily` / `quota_open` / `rate_limited` (429), `validation_error` / `content_invalid` / `content_too_large` / `unknown_herb` (422), `image_invalid` / `image_too_large` / `herb_not_identified` (422), `quota_photo` (429), `ai_not_configured` (503), `photo_identify_failed` (502), `not_published` / `herb_required` / `review_exists` / `job_pending` / `content_flags` (409), and others. `content_flags`: the published body contains wording flagged as dose / recommendation / cure claim / score; the researcher must re-submit with `acknowledge_flags: true`. The frontend maps codes to Hebrew.
 - Interactive docs are served at `/docs`, except in production.
 
 ### Request → research (Phase 3)

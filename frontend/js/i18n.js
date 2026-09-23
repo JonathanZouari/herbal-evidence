@@ -59,7 +59,16 @@ const ERRORS = {
   rate_limited: "נשלחו יותר מדי פניות. יש לנסות שוב בעוד דקה.",
   internal_error: "אירעה שגיאה. יש לנסות שוב מאוחר יותר.",
   network: "אין חיבור לשרת. יש לבדוק את החיבור ולנסות שוב.",
+  image_invalid: "לא ניתן לקרוא את התמונה. אפשר לנסות תמונה אחרת (JPEG או PNG) או להקליד את שם הצמח.",
+  image_too_large: "התמונה גדולה מדי. אפשר לנסות תמונה אחרת.",
+  quota_photo: "הגעת למספר הזיהויים המרבי לשעה. אפשר להקליד את שם הצמח.",
+  herb_not_identified: "לא הצלחנו לזהות צמח בתמונה. אפשר לצלם שוב מקרוב או להקליד את שם הצמח.",
+  ai_not_configured: "זיהוי מתמונה אינו זמין כרגע. אפשר להקליד את שם הצמח.",
+  photo_identify_failed: "הזיהוי נכשל כרגע. אפשר לנסות שוב או להקליד את שם הצמח.",
 };
+
+// herb photo identification (D-021); a category, never a number
+export const CERTAINTY = { high: "גבוהה", medium: "בינונית", low: "נמוכה" };
 
 export function errorMessage(code) {
   return ERRORS[code] || ERRORS.internal_error;
