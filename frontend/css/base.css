@@ -75,3 +75,10 @@ main:focus { outline: none; }
   h1 { font-size: 1.45rem; }
   main { padding: var(--space-5) var(--space-3); }
 }
+
+/* Print: the approved response, its sources and the footer disclaimer — no navigation, buttons or forms. */
+@media print {
+  .site-header, .skip-link, .no-print, .btn, #main form, #main > p:first-child { display: none !important; }
+  .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.8em; }
+}
