@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>חיפוש צמחי מרפא לפי מחלה | ראיות צמחים</title>
+<style>
+  :root {
+    --color-bg: #f7f5f0;
+    --color-surface: #ffffff;
+    --color-primary: #2f6b4f;
+    --color-primary-dark: #1f4a36;
+    --color-text: #23291f;
+    --color-muted: #5c6357;
+    --color-border: #dfe3da;
+    --color-good-bg: #e9f5ec;
+    --color-good-border: #a9d6b8;
+    --color-good-text: #1f5c37;
+    --color-bad-bg: #fbeceb;
+    --color-bad-border: #eab7b2;
+    --color-bad-text: #8a2f27;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+  }
+
+  header.page-header {
+    background: var(--color-primary-dark);
+    color: #fff;
+    padding: 28px 16px;
+    text-align: center;
+  }
+
+  header.page-header h1 {
+    margin: 0 0 6px;
+    font-size: 1.6rem;
+  }
+
+  header.page-header p {
+    margin: 0;
+    color: #d7e9dc;
+    font-size: 0.95rem;
+  }
+
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  .search-box {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .search-box label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .search-input-wrap {
+    position: relative;
+    flex: 1;
+  }
+
+  .search-input-wrap svg {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--color-muted);
+    pointer-events: none;
+  }
+
+  #condition-input {
+    width: 100%;
+    padding: 12px 42px 12px 14px;
+    font-size: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: #fdfdfb;
+    color: var(--color-text);
+  }
+
+  #condition-input:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+  }
+
+  #search-btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    background: var(--color-primary);
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  #search-btn:hover { background: var(--color-primary-dark); }
+
+  .chips {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chip {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: #f1f3ee;
+    color: var(--color-text);
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+
+  .chip:hover, .chip:focus {
+    border-color: var(--color-primary);
+    background: #e4efe7;
+  }
+
+  .datalist-hint {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--color-muted);
+  }
+
+  #results {
+    margin-top: 28px;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--color-muted);
+    padding: 40px 12px;
+  }
+
+  .condition-title {
+    font-size: 1.3rem;
+    margin-bottom: 2px;
+  }
+
+  .condition-desc {
+    color: var(--color-muted);
+    margin-bottom: 20px;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 640px) {
+    .columns { grid-template-columns: 1fr; }
+    .search-row { flex-direction: column; }
+  }
+
+  .column {
+    border-radius: var(--radius);
+    padding: 16px;
+    border: 1px solid var(--color-border);
+  }
+
+  .column.good {
+    background: var(--color-good-bg);
+    border-color: var(--color-good-border);
+  }
+
+  .column.bad {
+    background: var(--color-bad-bg);
+    border-color: var(--color-bad-border);
+  }
+
+  .column h2 {
+    margin: 0 0 12px;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .column.good h2 { color: var(--color-good-text); }
+  .column.bad h2 { color: var(--color-bad-text); }
+
+  .herb-card {
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+
+  .herb-card:last-child { margin-bottom: 0; }
+
+  .herb-name {
+    font-weight: 700;
+    font-size: 0.98rem;
+  }
+
+  .herb-latin {
+    font-style: italic;
+    color: var(--color-muted);
+    font-size: 0.82rem;
+    margin: 2px 0 4px;
+  }
+
+  .herb-note {
+    font-size: 0.85rem;
+    color: var(--color-text);
+  }
+
+  .disclaimer {
+    margin-top: 26px;
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    background: #fff8e6;
+    border: 1px solid #f0e0ad;
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  footer.page-footer {
+    text-align: center;
+    color: var(--color-muted);
+    font-size: 0.8rem;
+    padding: 20px 12px 40px;
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <h1>🔍🌿 חיפוש צמחי מרפא לפי מחלה</h1>
+  <p>הזינו מחלה או תסמין כדי לראות אילו צמחים מתאימים ואילו פחות מומלצים</p>
+</header>
+
+<main>
+  <section class="search-box">
+    <label for="condition-input">מחלה / תסמין</label>
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <input
+          type="text"
+          id="condition-input"
+          list="condition-list"
+          placeholder="לדוגמה: בחילה, נדודי שינה, חרדה..."
+          autocomplete="off"
+        />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <datalist id="condition-list"></datalist>
+      <button id="search-btn" type="button">חיפוש</button>
+    </div>
+
+    <div class="chips" id="condition-chips" aria-label="מחלות זמינות לדוגמה"></div>
+    <p class="datalist-hint">נתוני הדמה כוללים כרגע כמה מחלות/תסמינים נפוצים לצורך הדגמת הפיצ'ר.</p>
+  </section>
+
+  <section id="results">
+    <div class="empty-state">בחרו או הקלידו מחלה כדי לראות התאמות צמחים.</div>
+  </section>
+
+  <div class="disclaimer">
+    ⚠️ הנתונים בעמוד זה הם <strong>נתוני דמה בלבד</strong> לצורך הדגמת הפיצ'ר, ואינם מהווים ייעוץ רפואי.
+    בהתאם לעקרונות הפלטפורמה, כל תוכן סופי מוצג למשתמש רק לאחר בדיקה ואישור של חוקר/ת אנושי/ת.
+  </div>
+</main>
+
+<footer class="page-footer">
+  ראיות צמחים — Herbal Evidence
+</footer>
+
+<script src="herb-data.js"></script>
+<script>
+  (function () {
+    const input = document.getElementById("condition-input");
+    const searchBtn = document.getElementById("search-btn");
+    const results = document.getElementById("results");
+    const chipsWrap = document.getElementById("condition-chips");
+    const datalist = document.getElementById("condition-list");
+
+    function normalize(str) {
+      return (str || "").trim().toLowerCase();
+    }
+
+    function findCondition(query) {
+      const q = normalize(query);
+      if (!q) return null;
+      return (
+        HERB_DATA.conditions.find((c) => normalize(c.name) === q) ||
+        HERB_DATA.conditions.find((c) => normalize(c.name).includes(q))
+      );
+    }
+
+    function herbCard(herbId) {
+      const herb = HERB_DATA.herbs[herbId];
+      if (!herb) return "";
+      return `
+        <div class="herb-card">
+          <div class="herb-name">${herb.name}</div>
+          <div class="herb-latin">${herb.latinName}</div>
+          <div class="herb-note">${herb.note}</div>
+        </div>
+      `;
+    }
+
+    function renderCondition(condition) {
+      if (!condition) {
+        results.innerHTML = `
+          <div class="empty-state">
+            לא נמצאה התאמה לחיפוש. נסו לבחור אחת מהמחלות המוצעות למעלה.
+          </div>
+        `;
+        return;
+      }
+
+      const goodCards = condition.recommended.map(herbCard).join("") ||
+        `<p class="herb-note">אין כרגע צמחים מתאימים בנתוני הדמה.</p>`;
+      const badCards = condition.notRecommended.map(herbCard).join("") ||
+        `<p class="herb-note">אין כרגע צמחים שאינם מומלצים בנתוני הדמה.</p>`;
+
+      results.innerHTML = `
+        <h2 class="condition-title">${condition.name}</h2>
+        <p class="condition-desc">${condition.description}</p>
+        <div class="columns">
+          <div class="column good">
+            <h2>✅ צמחים מתאימים</h2>
+            ${goodCards}
+          </div>
+          <div class="column bad">
+            <h2>⚠️ פחות מומלץ / יש להימנע</h2>
+            ${badCards}
+          </div>
+        </div>
+      `;
+    }
+
+    function runSearch() {
+      const condition = findCondition(input.value);
+      renderCondition(condition);
+    }
+
+    function init() {
+      HERB_DATA.conditions.forEach((c) => {
+        const option = document.createElement("option");
+        option.value = c.name;
+        datalist.appendChild(option);
+
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "chip";
+        chip.textContent = c.name;
+        chip.addEventListener("click", () => {
+          input.value = c.name;
+          runSearch();
+        });
+        chipsWrap.appendChild(chip);
+      });
+
+      searchBtn.addEventListener("click", runSearch);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") runSearch();
+      });
+    }
+
+    init();
+  })();
+</script>
+
+</body>
+</html>
