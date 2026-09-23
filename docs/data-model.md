@@ -14,7 +14,7 @@ Source of truth: `supabase/migrations/`. Dev project: `herbal-evidence-dev` (ref
 | Table | Purpose | Client access |
 |-------|---------|---------------|
 | `profiles` | role + display name per auth user | own row (select) |
-| `herbs` | reference herbs + `aliases` for herb identification | anon + authenticated (select) |
+| `herbs` | reference herbs + `aliases` for herb identification + lazily-fetched reference photo (`image_path`/`image_attribution`/`image_source_url`/`image_status`/`image_fetched_at`) | anon + authenticated (select) |
 | `requests` | the user's claim: herb (required), preparation / cancer type / treatment (NULL = "I don't know") | own rows, **selected columns only** (no `status`, no `assigned_researcher_id`) |
 | `request_status_transitions` | allowed status changes (data, mirrored by backend) | none |
 | `request_events` | audit log of every status change, with actor | none |
@@ -28,6 +28,8 @@ Source of truth: `supabase/migrations/`. Dev project: `herbal-evidence-dev` (ref
 | `research_jobs` | durable job queue (D-010) | none |
 
 Storage: private bucket `research-artifacts` (PDF/text/JSON/CSV, 20 MB), no storage policies → service role only.
+Storage: public bucket `herb-images` (JPEG/PNG/WebP, 5 MB) — fetched once per herb from Wikimedia by the
+research worker and re-served from our own storage; public reads (no policy needed), service-role writes only.
 
 ## Request status
 

@@ -7,8 +7,10 @@ from pydantic import BaseModel, Field
 
 from app.auth.jwt import Admin, Staff, User
 from app.db import get_conn
+from app.domain.herbs import image_url as herb_image_url
 from app.services import requests as svc
 from app.services import reviews
+from app.settings import get_settings
 
 router = APIRouter(prefix="/api/v1")
 Conn = Annotated[Connection, Depends(get_conn)]
@@ -74,7 +76,15 @@ def me(conn: Conn, user: User):
 
 @router.get("/herbs")
 def herbs(conn: Conn):
-    return conn.execute("select id, name_he, name_en, latin_name from public.herbs order by name_he").fetchall()
+    supabase_url = get_settings().supabase_url
+    rows = conn.execute(
+        """select id, name_he, name_en, latin_name,
+                  case when image_status = 'found' then image_path end as image_path
+           from public.herbs order by name_he"""
+    ).fetchall()
+    for r in rows:
+        r["image_url"] = herb_image_url(supabase_url, r.pop("image_path"))
+    return rows
 
 
 # ------------------------------------------------------------------ user

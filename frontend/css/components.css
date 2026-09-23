@@ -82,6 +82,9 @@ dialog::backdrop { background: rgb(31 42 37 / 45%); }
 .toast[hidden] { display: none; }
 
 /* ---------------------------------------------------------------- response / editor */
+.herb-photo { margin: 0 0 var(--space-4); }
+.herb-photo img { display: block; width: 100%; max-width: 320px; border-radius: var(--radius-lg); object-fit: cover; aspect-ratio: 4 / 3; }
+.herb-photo figcaption { margin-top: var(--space-1); }
 .evidence h2 { margin-top: var(--space-5); }
 .finding { border-top: 1px solid var(--border); padding-top: var(--space-3); margin-top: var(--space-3); }
 .sources li { margin-bottom: var(--space-2); }

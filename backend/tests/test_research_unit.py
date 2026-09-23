@@ -10,9 +10,10 @@ from app.ai.guard import flag_content
 from app.ai.openai import OpenAIProvider, parse_response
 from app.ai.provider import DraftInput, NullProvider, ProviderError, ProviderNotConfigured, get_provider
 from app.ai.schema import Analysis, DraftContent, analysis_json_schema, draft_to_review, review_to_draft
-from app.research import europepmc, pubmed
+from app.research import europepmc, pubmed, wikimedia
 from app.research.http import FetchError, RateLimiter, SafeClient, check_url
 from app.research.sources import ResearchError, Source, build_terms, dedupe, pubmed_query
+from app.research.storage import upload_herb_image
 from app.settings import Settings
 from tests.helpers import FIXTURES, analysis, draft, literature_transport, openai_body
 
@@ -137,6 +138,90 @@ def test_build_terms():
     assert e.value.code == "herb_unidentified" and not e.value.retryable
     q = pubmed_query(["Ginger"])
     assert '"Ginger"[tiab]' in q and '"appetite"[tiab]' in q and "neoplasms[mh]" in q
+
+
+# ------------------------------------------------------------------ herb image (Wikimedia)
+
+IMG_URL = "https://upload.wikimedia.org/wikipedia/commons/z/zz/Zingiber_officinale.jpg"
+
+
+def wikimedia_transport(*, has_image=True, extmetadata=True):
+    def handler(req: httpx.Request) -> httpx.Response:
+        host, params = req.url.host, dict(req.url.params)
+        if host == "en.wikipedia.org":
+            title = params["titles"]
+            if title == "Zingiber officinale":
+                page = {"pageid": 1, "title": title, "fullurl": "https://en.wikipedia.org/wiki/Ginger"}
+                if has_image:
+                    page["original"] = {"source": IMG_URL}
+                return httpx.Response(200, json={"query": {"pages": {"1": page}}})
+            return httpx.Response(200, json={"query": {"pages": {"-1": {"missing": ""}}}})
+        if host == "commons.wikimedia.org":
+            if not extmetadata:
+                return httpx.Response(200, json={"query": {"pages": {"-1": {"missing": ""}}}})
+            meta = {"Artist": {"value": "Jane Doe"}, "LicenseShortName": {"value": "CC BY-SA 3.0"}}
+            return httpx.Response(200, json={"query": {"pages": {"2": {"imageinfo": [{"extmetadata": meta}]}}}})
+        if host == "upload.wikimedia.org":
+            return httpx.Response(200, headers={"content-type": "image/jpeg"}, content=b"\xff\xd8fake-jpeg")
+        raise AssertionError(f"unexpected request {req.url}")
+    return httpx.MockTransport(handler)
+
+
+def test_fetch_plant_image_prefers_latin_name():
+    client = SafeClient(transport=wikimedia_transport())
+    result = wikimedia.fetch_plant_image(client, "Ginger", "Zingiber officinale")
+    assert result.content == b"\xff\xd8fake-jpeg" and result.content_type == "image/jpeg"
+    assert result.attribution == "Jane Doe / CC BY-SA 3.0"
+    assert result.source_url == "https://en.wikipedia.org/wiki/Ginger"
+
+
+def test_fetch_plant_image_falls_back_to_english_name_when_latin_name_misses():
+    # "Not A Real Plant" (latin_name) resolves to nothing; "Ginger" (name_en) does - the adapter must fall
+    # back to it rather than giving up after the first (more precise) title fails.
+    def handler(req: httpx.Request) -> httpx.Response:
+        if req.url.host == "en.wikipedia.org":
+            title = dict(req.url.params)["titles"]
+            if title != "Ginger":
+                return httpx.Response(200, json={"query": {"pages": {"-1": {"missing": ""}}}})
+            return httpx.Response(200, json={"query": {"pages": {"1": {
+                "original": {"source": IMG_URL}, "fullurl": "https://en.wikipedia.org/wiki/Ginger"}}}})
+        if req.url.host == "commons.wikimedia.org":
+            return httpx.Response(200, json={"query": {"pages": {"-1": {"missing": ""}}}})
+        if req.url.host == "upload.wikimedia.org":
+            return httpx.Response(200, headers={"content-type": "image/jpeg"}, content=b"x")
+        raise AssertionError(f"unexpected request {req.url}")
+
+    client = SafeClient(transport=httpx.MockTransport(handler))
+    result = wikimedia.fetch_plant_image(client, "Ginger", "Not A Real Plant")
+    assert result.source_url == "https://en.wikipedia.org/wiki/Ginger" and result.attribution == "Wikimedia Commons"
+
+
+def test_fetch_plant_image_no_page_returns_none():
+    client = SafeClient(transport=wikimedia_transport(has_image=False))
+    assert wikimedia.fetch_plant_image(client, "Ginger", "Zingiber officinale") is None
+
+
+def test_fetch_plant_image_missing_attribution_falls_back():
+    client = SafeClient(transport=wikimedia_transport(extmetadata=False))
+    result = wikimedia.fetch_plant_image(client, "Ginger", "Zingiber officinale")
+    assert result.attribution == "Wikimedia Commons"
+
+
+def test_upload_herb_image_posts_to_storage_object_url(monkeypatch):
+    import app.research.http as http_mod
+    monkeypatch.setattr(http_mod, "_extra_allowed_host", "x.supabase.co")   # the operator's own project, allowed at worker startup
+    seen = {}
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        seen["url"], seen["headers"], seen["body"] = str(req.url), req.headers, req.content
+        return httpx.Response(200, json={"Key": "herb-images/7.jpg"})
+
+    client = SafeClient(transport=httpx.MockTransport(handler))
+    path = upload_herb_image(client, "https://x.supabase.co", "service-key-SECRET", 7, b"bytes", "image/jpeg")
+    assert path == "7.jpg"
+    assert seen["url"] == "https://x.supabase.co/storage/v1/object/herb-images/7.jpg"
+    assert seen["headers"]["authorization"] == "Bearer service-key-SECRET" and seen["headers"]["x-upsert"] == "true"
+    assert seen["body"] == b"bytes"
 
 
 # ------------------------------------------------------------------ schema

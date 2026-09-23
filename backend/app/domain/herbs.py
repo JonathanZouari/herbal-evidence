@@ -2,6 +2,8 @@ import re
 
 from psycopg import Connection
 
+from app.research.storage import BUCKET
+
 # Hebrew geresh/gershayim and their ASCII/typographic look-alikes -> one canonical apostrophe.
 _QUOTES = str.maketrans({"׳": "'", "’": "'", "‘": "'", "`": "'", "״": '"', "“": '"', "”": '"'})
 
@@ -22,3 +24,10 @@ def identify(conn: Connection, text: str) -> int | None:
         {"n": normalize(text), "src": "׳’‘`״“”", "dst": "''''\"\"\""},
     ).fetchone()
     return row["id"] if row else None
+
+
+def image_url(supabase_url: str, image_path: str | None) -> str | None:
+    """Public object URL for a fetched herb photo, or None (herb has no image yet / none found)."""
+    if not image_path:
+        return None
+    return f"{supabase_url.rstrip('/')}/storage/v1/object/public/{BUCKET}/{image_path}"
