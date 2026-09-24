@@ -20,7 +20,7 @@ export function renderHeader(me) {
     me ? h("button", { type: "button", onclick: signOut }, "יציאה") : null);
   clear(header).append(h("div", { class: "inner" },
     h("a", { class: "brand", href: me ? (NAV[me.role] || NAV.user)[0][0] : "/" },
-      h("span", { class: "brand-mark", "aria-hidden": "true" }), BRAND),
+      h("span", { class: "brand-mark", "aria-hidden": "true" }), "🌿", BRAND),
     nav));
 }
 
